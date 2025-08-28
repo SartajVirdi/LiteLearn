@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import lessons from "../data/lessons.json";
 import { isCompleted } from "../progress";
 import { getLang } from "../i18n";   // ✅ make sure this is imported
+import { dueNow } from "../adapt";
+
 
 export default function LessonList() {
   // 🔑 Language filter with fallback
@@ -22,7 +24,8 @@ export default function LessonList() {
             border: "1px solid #333",
             borderRadius: 12,
             padding: 16,
-            marginBottom: 12
+            marginBottom: 12,
+            opacity: dueNow('${l.id}-q1') ? 1 : 0.5
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>

@@ -2,6 +2,9 @@ import React, { useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import lessons from "../data/lessons.json";
 import { markCompleted } from "../progress";
+import TTS from "./TTS";
+import { updateMastery } from "../adapt";
+
 
 export default function LessonView() {
   const { id } = useParams();
