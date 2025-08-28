@@ -1,0 +1,28 @@
+[
+  {
+    "id": "digital-basics-1",
+    "title": "What is the Internet?",
+    "language": "en",
+    "content": "The Internet is a global network that lets computers share information. You can use it to read, watch, learn and talk to people.",
+    "quiz": {
+      "question": "The Internet is…",
+      "options": [
+        "A single big computer",
+        "A network of connected computers",
+        "Only for videos"
+      ],
+      "answerIndex": 1
+    }
+  },
+  {
+    "id": "math-1",
+    "title": "Addition Basics",
+    "language": "en",
+    "content": "Adding means putting numbers together. Example: 2 + 3 = 5.",
+    "quiz": {
+      "question": "2 + 3 equals?",
+      "options": ["4", "5", "6"],
+      "answerIndex": 1
+    }
+  }
+]
