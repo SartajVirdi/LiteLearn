@@ -4,6 +4,8 @@ import config from "./config";
 import LanguageSwitch from "./components/LanguageSwitch";
 import LessonList from "./components/LessonList";
 import LessonView from "./components/LessonView";
+import OfflineBadge from "./components/OfflineBadge";
+
 
 export default function App() {
   return (
@@ -17,6 +19,7 @@ export default function App() {
         <Route path="/" element={<LessonList />} />
         <Route path="/lesson/:id" element={<LessonView />} />
       </Routes>
+      <OfflineBadge />
       <footer style={{ textAlign: "center", opacity: .6, fontSize: 12, padding: 24 }}>
         v{config.version}
       </footer>
