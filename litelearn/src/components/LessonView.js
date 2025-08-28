@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import lessons from "../data/lessons.json";
+import { loadPacks } from "../packLoader";
 import { markCompleted } from "../progress";
 import TTS from "./TTS";
 import { updateMastery } from "../adapt";
