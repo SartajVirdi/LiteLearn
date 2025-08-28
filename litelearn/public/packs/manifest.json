@@ -1,0 +1,6 @@
+{
+  "packs": [
+    { "id": "starter-en", "label": "Starter Pack (EN)", "path": "/packs/starter-en.json" },
+    { "id": "starter-hi", "label": "Starter Pack (HI)", "path": "/packs/starter-hi.json" }
+  ]
+}
