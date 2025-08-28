@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import lessons from "../data/lessons.json";
+import { getLang } from "../i18n";
 import { isCompleted } from "../progress";
 
 export default function LessonList() {
@@ -11,7 +12,7 @@ export default function LessonList() {
         Works offline. Your progress saves on this device.
       </p>
       <ul style={{ listStyle: "none", padding: 0 }}>
-        {lessons.map(l => (
+        {lessons.filter(l => l.language === getLang()).map(l => (
           <li key={l.id} style={{
             border: "1px solid #333", borderRadius: 12, padding: 16, marginBottom: 12
           }}>
