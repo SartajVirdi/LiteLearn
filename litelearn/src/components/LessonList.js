@@ -102,8 +102,7 @@ export default function LessonList() {
                       {l.language.toUpperCase()}
                     </span>
 
-                    {isCompleted(lgit add src/progress.js src/components/LessonView.js src/components/LessonList.js
-) && (
+                    {isCompleted(l) && (
                       <span
                         style={{
                           marginLeft: 8,
