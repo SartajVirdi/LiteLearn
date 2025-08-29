@@ -17,6 +17,40 @@
     }
   },
   {
+    "id": "email-basics-hi",
+    "group": "email-basics",
+    "language": "hi",
+    "subjectId": "digital-literacy",
+    "subjectTitle": "डिजिटल साक्षरता",
+    "chapterId": "digital-basics",
+    "chapterTitle": "डिजिटल मूल बातें",
+    "order": 2,
+    "title": "ईमेल की बुनियाद",
+    "content": "ईमेल से आप संदेश भेज और प्राप्त कर सकते हैं। ईमेल पता ऐसा दिखता है: name@example.com। अपना पासवर्ड गुप्त रखें।",
+    "quiz": {
+      "question": "इनमें से कौन सा ईमेल पता जैसा दिखता है?",
+      "options": ["name@example.com", "name.example", "www.example.com"],
+      "answerIndex": 0
+    }
+  },
+  {
+    "id": "online-safety-101-hi",
+    "group": "online-safety-101",
+    "language": "hi",
+    "subjectId": "digital-literacy",
+    "subjectTitle": "डिजिटल साक्षरता",
+    "chapterId": "online-safety",
+    "chapterTitle": "ऑनलाइन सुरक्षा",
+    "order": 1,
+    "title": "ऑनलाइन सुरक्षित कैसे रहें",
+    "content": "पासवर्ड या ओटीपी साझा न करें। वेबसाइट का पता जाँचें। अजीब संदेश या पैसे माँगने पर निर्णय से पहले जाँचें।",
+    "quiz": {
+      "question": "ऑनलाइन क्या साझा करना सुरक्षित है?",
+      "options": ["आपका ओटीपी", "जन्मदिन वाला पासवर्ड", "सार्वजनिक जानकारी जैसे स्कूल की वेबसाइट लिंक"],
+      "answerIndex": 2
+    }
+  },
+  {
     "id": "math-01-hi",
     "group": "math-01",
     "language": "hi",
@@ -25,11 +59,45 @@
     "chapterId": "math-basics",
     "chapterTitle": "गणित की मूल बातें",
     "order": 1,
-    "title": "जोड़ के मूल बातें",
+    "title": "जोड़ की मूल बातें",
     "content": "जोड़ का मतलब है संख्याओं को मिलाना। उदाहरण: 2 + 3 = 5।",
     "quiz": {
       "question": "2 + 3 कितना होता है?",
       "options": ["4", "5", "6"],
+      "answerIndex": 1
+    }
+  },
+  {
+    "id": "subtraction-basics-hi",
+    "group": "math-02",
+    "language": "hi",
+    "subjectId": "mathematics",
+    "subjectTitle": "गणित",
+    "chapterId": "math-basics",
+    "chapterTitle": "गणित की मूल बातें",
+    "order": 2,
+    "title": "घटाव की मूल बातें",
+    "content": "घटाव का मतलब है कम करना। उदाहरण: 5 − 2 = 3।",
+    "quiz": {
+      "question": "5 − 2 कितना होता है?",
+      "options": ["2", "3", "4"],
+      "answerIndex": 1
+    }
+  },
+  {
+    "id": "multiplication-basics-hi",
+    "group": "math-03",
+    "language": "hi",
+    "subjectId": "mathematics",
+    "subjectTitle": "गणित",
+    "chapterId": "math-basics",
+    "chapterTitle": "गणित की मूल बातें",
+    "order": 3,
+    "title": "गुणा की मूल बातें",
+    "content": "गुणा बार-बार जोड़ना है। उदाहरण: 3 × 2 = 6।",
+    "quiz": {
+      "question": "3 × 2 कितना होता है?",
+      "options": ["5", "6", "8"],
       "answerIndex": 1
     }
   }
