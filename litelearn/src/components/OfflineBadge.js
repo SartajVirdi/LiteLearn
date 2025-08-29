@@ -3,16 +3,16 @@ import React, { useEffect, useState } from "react";
 export default function OfflineBadge() {
   const [online, setOnline] = useState(navigator.onLine);
 
-  // detect dark mode (system)
-  const getDark = () =>
+  // system dark mode?
+  const prefersDark = () =>
     typeof window !== "undefined" &&
-    window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches;
+    window.matchMedia?.("(prefers-color-scheme: dark)").matches;
 
-  const [isDark, setIsDark] = useState(getDark());
+  const [isDark, setIsDark] = useState(prefersDark());
 
-  // detect high-contrast (your toggle)
-  const highContrast = typeof document !== "undefined" &&
+  // your high-contrast toggle (adds body.high-contrast)
+  const isHighContrast =
+    typeof document !== "undefined" &&
     document.body.classList.contains("high-contrast");
 
   useEffect(() => {
@@ -21,37 +21,39 @@ export default function OfflineBadge() {
     window.addEventListener("online", up);
     window.addEventListener("offline", down);
 
-    const mq = window.matchMedia
-      ? window.matchMedia("(prefers-color-scheme: dark)")
-      : null;
+    const mq = window.matchMedia?.("(prefers-color-scheme: dark)");
     const onChange = (e) => setIsDark(e.matches);
-    if (mq) {
-      mq.addEventListener ? mq.addEventListener("change", onChange) : mq.addListener(onChange);
-    }
+    mq?.addEventListener?.("change", onChange);
 
     return () => {
       window.removeEventListener("online", up);
       window.removeEventListener("offline", down);
-      if (mq) {
-        mq.removeEventListener ? mq.removeEventListener("change", onChange) : mq.removeListener(onChange);
-      }
+      mq?.removeEventListener?.("change", onChange);
     };
   }, []);
 
-  // colors that adapt to theme + state
-  let bg, border, color;
-  if (highContrast) {
+  // Strong, high-contrast colors
+  const accent = online
+    ? (isDark ? "#7DFF9A" : "#0F8A00")   // green
+    : (isDark ? "#FF9B9B" : "#B00020");  // red
+
+  let bg, border, color, shadow;
+  if (isHighContrast) {
     bg = "transparent";
-    border = "#fff";
-    color = "#fff";
+    border = "#FFF";
+    color = "#FFF";
+    shadow = "none";
   } else if (isDark) {
-    bg = online ? "rgba(255,255,255,0.12)" : "rgba(255,200,200,0.16)";
-    border = "rgba(255,255,255,0.35)";
-    color = "#fff";
+    bg = "#1a1a1a";
+    border = "#444";
+    color = "#FFF";
+    shadow = "0 2px 10px rgba(0,0,0,0.4)";
   } else {
-    bg = online ? "#f3f2ff" : "#fff4f4";
-    border = "#cfd1ff";
+    // ✅ very readable on white backgrounds
+    bg = "#FFFFFF";
+    border = "#222";
     color = "#111";
+    shadow = "0 2px 10px rgba(0,0,0,0.15)";
   }
 
   return (
@@ -61,15 +63,30 @@ export default function OfflineBadge() {
         position: "fixed",
         right: 12,
         bottom: 12,
-        padding: "6px 10px",
+        padding: "8px 12px",
         borderRadius: 16,
         border: '1px solid ${border}',
         background: bg,
         color,
         fontSize: 12,
-        zIndex: 1000
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        boxShadow: shadow,
+        zIndex: 1000,
       }}
+      title={online ? "Online" : "Offline: cached content available"}
     >
+      <span
+        aria-hidden="true"
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: 999,
+          background: accent,
+          display: "inline-block",
+        }}
+      />
       {online ? "Online ✓" : "Offline • content available"}
     </div>
   );
