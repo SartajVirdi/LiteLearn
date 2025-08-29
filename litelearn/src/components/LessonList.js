@@ -57,6 +57,16 @@ export default function LessonList() {
       <p style={{ opacity: 0.8, marginTop: 0 }}>
         Works offline. Your progress saves on this device.
       </p>
+      {/* Teacher demo CSV download */}
+      <p style={{ marginTop: 6 }}>
+        <a
+          href={process.env.PUBLIC_URL + "/teacher-demo.csv"}
+          download
+          style={{ textDecoration: "none" }}
+        >
+          📥 Download teacher-demo.csv
+        </a>
+      </p>
 
       {/* Group by Subject -> Chapter */}
       {(() => {
@@ -198,7 +208,7 @@ export default function LessonList() {
         ));
       })()}
 
-      {/* 📥 Teacher CSV Importer (appends to lessons & caches) */}
+      {/* 📥 Teacher CSV Importer */}
       <TeacherImport
         onAdd={(generated) => {
           const next = [...lessons, ...generated];

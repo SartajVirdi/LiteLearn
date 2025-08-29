@@ -1,0 +1,5 @@
+id,group,language,subjectId,subjectTitle,chapterId,chapterTitle,order,title,content,quiz.question,quiz.option1,quiz.option2,quiz.option3,quiz.answerIndex
+teacher-net-1-en,teacher-net-1,en,digital-literacy,Digital Literacy,digital-basics,Digital Basics,4,What is Wi-Fi?,Wi-Fi lets devices connect without cables.,Wi-Fi is used to...,Send messages with cables,Connect devices wirelessly,Make phone calls only,1
+teacher-net-1-hi,teacher-net-1,hi,digital-literacy,डिजिटल साक्षरता,digital-basics,डिजिटल मूल बातें,4,वाई-फ़ाई क्या है?,वाई-फ़ाई से डिवाइस बिना तार के जुड़ते हैं।,वाई-फ़ाई का उपयोग...,केबल से संदेश भेजने के लिए,डिवाइस को वायरलेस जोड़ने के लिए,सिर्फ फोन कॉल करने के लिए,1
+teacher-math-4-en,teacher-math-4,en,mathematics,Mathematics,math-basics,Math Basics,4,Division Basics,Division splits numbers into equal parts. Example: 6 ÷ 2 = 3.,6 ÷ 2 equals?,2,3,4,1
+teacher-math-4-hi,teacher-math-4,hi,mathematics,गणित,math-basics,गणित की मूल बातें,4,भाग की मूल बातें,भाग का मतलब बराबर-बराबर बाँटना। उदाहरण: 6 ÷ 2 = 3.,6 ÷ 2 कितना होता है?,2,3,4,1
