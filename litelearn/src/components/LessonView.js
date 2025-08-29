@@ -113,7 +113,7 @@ export default function LessonView() {
           onClick={() => {
             setChecked(true);
             updateMastery('${lesson.id}-q1, isCorrect');
-            if (isCorrect) markCompleted(lesson.id);
+            if (isCorrect) markCompleted(lesson);           // best (stores group + id)
           }}
           disabled={selected === null}
           style={{ marginTop: 8 }}
