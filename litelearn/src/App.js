@@ -7,6 +7,7 @@ import LessonView from "./components/LessonView";
 import OfflineBadge from "./components/OfflineBadge";
 import HighContrastToggle from "./components/HighContrastToggle";
 import SkipToContent from "./components/SkipToContent";
+import ClearImportedLessons from "./components/ClearImportedLessons";
 import ResetProgress from "./components/ResetProgress";
 
 export default function App() {
@@ -44,6 +45,7 @@ export default function App() {
       </main>
 
       <OfflineBadge />
+      <ClearImportedLessons />
       <ResetProgress />
 
       <footer style={{ textAlign: "center", opacity: 0.6, fontSize: 12, padding: 24 }}>
