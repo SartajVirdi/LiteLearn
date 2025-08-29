@@ -9,6 +9,7 @@ import HighContrastToggle from "./components/HighContrastToggle";
 import SkipToContent from "./components/SkipToContent";
 import ClearImportedLessons from "./components/ClearImportedLessons";
 import ResetProgress from "./components/ResetProgress";
+import InstallPrompt from "./components/InstallPrompt";
 
 export default function App() {
   return (
@@ -45,6 +46,7 @@ export default function App() {
       </main>
 
       <OfflineBadge />
+      <InstallPrompt />
       <ClearImportedLessons />
       <ResetProgress />
 
