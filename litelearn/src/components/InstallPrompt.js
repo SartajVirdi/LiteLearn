@@ -42,8 +42,8 @@ export default function InstallPrompt() {
       aria-live="polite"
       style={{
         position: "fixed",
-        left: 12,
-        bottom: 64,
+        top: 60,          // ⬅ sit below the header
+        right: 12,        // ⬅ move to top-right
         zIndex: 1000,
         border: "1px solid #333",
         borderRadius: 12,
