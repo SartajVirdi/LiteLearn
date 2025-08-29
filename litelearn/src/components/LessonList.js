@@ -4,6 +4,7 @@ import { loadPacks } from "../packLoader";
 import { isCompleted } from "../progress";
 import { getLang } from "../i18n";
 import { dueNow } from "../adapt";
+import TeacherImport from "./TeacherImport";
 
 export default function LessonList() {
   const [lessons, setLessons] = useState([]);
@@ -140,6 +141,15 @@ export default function LessonList() {
           })}
         </ul>
       )}
+
+      {/* 📥 Teacher CSV Importer */}
+      <TeacherImport
+        onAdd={(generated) => {
+          const next = [...lessons, ...generated];
+          setLessons(next);
+          localStorage.setItem("litelearn_lessons", JSON.stringify(next));
+        }}
+      />
     </div>
   );
 }
