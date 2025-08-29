@@ -3,8 +3,13 @@
     "id": "internet-101-hi",
     "group": "internet-101",
     "language": "hi",
+    "subjectId": "digital-literacy",
+    "subjectTitle": "डिजिटल साक्षरता",
+    "chapterId": "digital-basics",
+    "chapterTitle": "डिजिटल मूल बातें",
+    "order": 1,
     "title": "इंटरनेट क्या है?",
-    "content": "इंटरनेट एक वैश्विक नेटवर्क है जो कंप्यूटरों को जानकारी साझा करने देता है।",
+    "content": "इंटरनेट एक वैश्विक नेटवर्क है जो कंप्यूटरों को जानकारी साझा करने देता है। इससे आप पढ़ सकते हैं, देख सकते हैं, सीख सकते हैं और लोगों से बात कर सकते हैं।",
     "quiz": {
       "question": "इंटरनेट क्या है?",
       "options": ["एक बड़ा कंप्यूटर", "जुड़े हुए कंप्यूटरों का नेटवर्क", "सिर्फ वीडियो के लिए"],
@@ -15,8 +20,17 @@
     "id": "math-01-hi",
     "group": "math-01",
     "language": "hi",
+    "subjectId": "mathematics",
+    "subjectTitle": "गणित",
+    "chapterId": "math-basics",
+    "chapterTitle": "गणित की मूल बातें",
+    "order": 1,
     "title": "जोड़ के मूल बातें",
     "content": "जोड़ का मतलब है संख्याओं को मिलाना। उदाहरण: 2 + 3 = 5।",
-    "quiz": { "question": "2 + 3 कितना होता है?", "options": ["4", "5", "6"], "answerIndex": 1 }
+    "quiz": {
+      "question": "2 + 3 कितना होता है?",
+      "options": ["4", "5", "6"],
+      "answerIndex": 1
+    }
   }
 ]

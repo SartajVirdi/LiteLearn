@@ -3,11 +3,20 @@
     "id": "internet-101-en",
     "group": "internet-101",
     "language": "en",
+    "subjectId": "digital-literacy",
+    "subjectTitle": "Digital Literacy",
+    "chapterId": "digital-basics",
+    "chapterTitle": "Digital Basics",
+    "order": 1,
     "title": "What is the Internet?",
-    "content": "The Internet is a global network that lets computers share information.",
+    "content": "The Internet is a global network that lets computers share information. You can use it to read, watch, learn and talk to people.",
     "quiz": {
       "question": "The Internet is…",
-      "options": ["A single big computer", "A network of connected computers", "Only for videos"],
+      "options": [
+        "A single big computer",
+        "A network of connected computers",
+        "Only for videos"
+      ],
       "answerIndex": 1
     }
   },
@@ -15,8 +24,17 @@
     "id": "math-01-en",
     "group": "math-01",
     "language": "en",
+    "subjectId": "mathematics",
+    "subjectTitle": "Mathematics",
+    "chapterId": "math-basics",
+    "chapterTitle": "Math Basics",
+    "order": 1,
     "title": "Addition Basics",
     "content": "Adding means putting numbers together. Example: 2 + 3 = 5.",
-    "quiz": { "question": "2 + 3 equals?", "options": ["4", "5", "6"], "answerIndex": 1 }
+    "quiz": {
+      "question": "2 + 3 equals?",
+      "options": ["4", "5", "6"],
+      "answerIndex": 1
+    }
   }
 ]
