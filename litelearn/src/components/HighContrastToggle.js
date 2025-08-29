@@ -15,10 +15,20 @@ export default function HighContrastToggle() {
       onClick={() => setOn(v => !v)}
       aria-pressed={on}
       aria-label="Toggle high-contrast mode"
-      style={{ marginLeft: 8 }}
-      title="High-contrast mode"
+      style={{
+        position: "fixed",
+        top: 12,
+        left: 12,
+        zIndex: 1000,
+        padding: "6px 10px",
+        borderRadius: 8,
+        border: "1px solid #333",
+        background: on ? "#000" : "#fff",
+        color: on ? "#fff" : "#000",
+        cursor: "pointer"
+      }}
     >
-      {on ? "🌓 High Contrast: ON" : "🌓 High Contrast: OFF"}
+      {on ? "HC ✓" : "HC"}
     </button>
   );
 }
