@@ -19,33 +19,40 @@ export default function LessonView() {
       try {
         setAllLessons(JSON.parse(cached));
         setLoading(false);
-      } catch { /* ignore bad cache */ }
+      } catch {
+        /* ignore bad cache */
+      }
     }
     // 2) refresh from packs (updates cache)
     loadPacks()
-      .then(ls => {
+      .then((ls) => {
         setAllLessons(ls);
         localStorage.setItem("litelearn_lessons", JSON.stringify(ls));
       })
-      .catch(() => { /* keep cache if fetch fails */ })
+      .catch(() => {
+        /* keep cache if fetch fails */
+      })
       .finally(() => setLoading(false));
   }, []);
 
   // Helper: find by id → then pick same group in current language (fallback to EN/any)
   const lesson = useMemo(() => {
     if (!allLessons.length) return null;
-    const byId = allLessons.find(l => l.id === id);
+    const byId = allLessons.find((l) => l.id === id);
     if (!byId) return null;
     const group = byId.group || byId.id;
 
     // exact language match
-    const exact = allLessons.find(l => (l.group || l.id) === group && l.language === lang);
+    const exact = allLessons.find(
+      (l) => (l.group || l.id) === group && l.language === lang
+    );
     if (exact) return exact;
 
     // fallback to English, then any in the group
     return (
-      allLessons.find(l => (l.group || l.id) === group && l.language === "en") ||
-      byId
+      allLessons.find(
+        (l) => (l.group || l.id) === group && l.language === "en"
+      ) || byId
     );
   }, [allLessons, id, lang]);
 
@@ -62,26 +69,40 @@ export default function LessonView() {
   const isCorrect = selected === lesson.quiz.answerIndex;
 
   return (
-    <div style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
-      <Link to="/" style={{ textDecoration: "none" }}>← Back</Link>
+    <main id="main" style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
+      <Link to="/" aria-label="Go back to lesson list" style={{ textDecoration: "none" }}>
+        ← Back
+      </Link>
 
-      <h2 style={{ marginBottom: 12 }}>
+      <h1 style={{ marginBottom: 12 }}>
         {lesson.title} <TTS text={lesson.content} />
-      </h2>
+      </h1>
 
       <p style={{ lineHeight: 1.6 }}>{lesson.content}</p>
 
-      <div style={{ marginTop: 24, padding: 16, border: "1px solid #333", borderRadius: 12 }}>
-        <strong>Quick Check</strong>
+      <section
+        aria-labelledby="quiz-heading"
+        style={{
+          marginTop: 24,
+          padding: 16,
+          border: "1px solid #333",
+          borderRadius: 12,
+        }}
+      >
+        <h2 id="quiz-heading">Quick Check</h2>
         <p style={{ marginTop: 12 }}>{lesson.quiz.question}</p>
 
         {lesson.quiz.options.map((opt, idx) => (
-          <label key={idx} style={{ display: "block", marginBottom: 8, cursor: "pointer" }}>
+          <label
+            key={idx}
+            style={{ display: "block", marginBottom: 8, cursor: "pointer" }}
+          >
             <input
               type="radio"
               name="quiz"
               checked={selected === idx}
               onChange={() => setSelected(idx)}
+              aria-label={'Option ${idx + 1}:${opt}'}
               style={{ marginRight: 8 }}
             />
             {opt}
@@ -91,22 +112,24 @@ export default function LessonView() {
         <button
           onClick={() => {
             setChecked(true);
-            updateMastery(`${lesson.id}-q1`, isCorrect);
+            updateMastery('${lesson.id}-q1, isCorrect');
             if (isCorrect) markCompleted(lesson.id);
           }}
           disabled={selected === null}
           style={{ marginTop: 8 }}
-          aria-label="Check answer"
+          aria-label="Check selected quiz answer"
         >
           Check answer
         </button>
 
         {checked && (
           <p style={{ marginTop: 12, fontWeight: "bold" }}>
-            {isCorrect ? "✅ Correct! Marked as completed." : "❌ Not quite. Try another option."}
+            {isCorrect
+              ? "✅ Correct! Marked as completed."
+              : "❌ Not quite. Try another option."}
           </p>
         )}
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
