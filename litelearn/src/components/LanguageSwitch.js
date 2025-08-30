@@ -4,6 +4,7 @@ import config from "../config";
 
 export default function LanguageSwitch() {
   const current = getLang();
+
   return (
     <div
       style={{
@@ -20,13 +21,7 @@ export default function LanguageSwitch() {
           key={l}
           onClick={() => setLang(l)}
           aria-label={'Switch language to ${l}'}
-          style={{
-            padding: "6px 10px",
-            borderRadius: 12,
-            border: current === l ? "2px solid #222" : "1px solid #999",
-            background: current === l ? "#fff" : "transparent",
-            cursor: "pointer"
-          }}
+          className={current === l ? "lang-active" : "lang-inactive"}
         >
           {l.toUpperCase()}
         </button>

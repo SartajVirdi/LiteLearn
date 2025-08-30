@@ -19,10 +19,13 @@ body { line-height: 1.6; color: #111; background: #fff; }
 a { color: #0645AD; }
 a:visited { color: #0B0080; }
 
+/* --- Global button styling --- */
 button {
   padding: 8px 12px;
   border-radius: 12px;
-  border: 1px solid #333;
+  border: 1px solid var(--btn-border, #333);
+  background: var(--btn-bg, #fff);
+  color: var(--btn-text, #000);
   cursor: pointer;
 }
 
@@ -34,21 +37,42 @@ input[type="radio"]:focus-visible {
   outline-offset: 2px;
 }
 
-/* High-contrast mode */
+/* --- High-contrast mode --- */
 body.high-contrast { background: #000; color: #fff; }
 body.high-contrast a { color: #7ab6ff; }
-body.high-contrast button { background: #111; color: #fff; border-color: #fff; }
+
+/* Buttons & cards adapt automatically */
+body.high-contrast button {
+  background: #111;
+  color: #fff;
+  border-color: #fff;
+}
 body.high-contrast .card, 
 body.high-contrast li {
   border-color: #fff !important;
 }
 
-/* Respect users who prefer reduced motion */
+/* --- Floating utility buttons (bottom-left) --- */
+.floating-btn {
+  position: fixed;
+  left: 12px;
+  z-index: 1000;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Stacking order */
+.reset-btn { bottom: 12px; }   /* Reset at the bottom */
+.clear-btn { bottom: 48px; }   /* Clear above Reset */
+
+/* --- Respect users who prefer reduced motion --- */
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
 
+/* --- Skip link target --- */
 #main:focus {
   outline: 3px solid #007acc; /* blue focus ring */
-  scroll-margin-top: 20px; /* avoid sticking to top */
+  scroll-margin-top: 20px;    /* avoid sticking to top */
 }
