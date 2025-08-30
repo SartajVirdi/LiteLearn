@@ -1,3 +1,3 @@
 ﻿id,group,language,subjectId,subjectTitle,chapterId,chapterTitle,order,title,content,quiz.question,quiz.option1,quiz.option2,quiz.option3,quiz.answerIndex
-teacher-math-4-en,teacher-math-4,en,mathematics,Mathematics,math-basics,Math Basics,4,Division Basics,Division means splitting a number into equal parts. Example: 6 ÷ 2 = 3.,6 ÷ 2 equals?,2,3,4,1
-teacher-math-4-hi,teacher-math-4,hi,mathematics,गणित,math-basics,गणित की मूल बातें,4,भाग की मूल बातें,भाग का मतलब है किसी संख्या को बराबर भागों में बाँटना। उदाहरण: 6 ÷ 2 = 3,6 ÷ 2 कितना होता है?,2,3,4,1
+teacher-math-4-en,teacher-math-4,en,mathematics,Mathematics,math-basics,Math Basics,4,Division Basics,Division means splitting a number into equal parts. Example: 6 / 2 = 3.,What is 6 divided by 2?,2,3,4,1
+teacher-math-4-hi,teacher-math-4,hi,mathematics,गणित,math-basics,गणित की मूल बातें,4,भाग की मूल बातें,भाग का मतलब है किसी संख्या को बराबर भागों में बाँटना। उदाहरण: 6 / 2 = 3,6 को 2 से भाग देने पर क्या होगा?,2,3,4,1
