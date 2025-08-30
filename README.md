@@ -1,7 +1,7 @@
 # LiteLearn  
 **Learn anytime, anywhere — even offline**  
 
-![LiteLearn Logo](public/logo192.png)  
+![LiteLearn Logo](assets/logo.png)  
 
 **Created by:** Sartaj Virdi  
 **Hackathon Submission — August 2025**  
