@@ -83,22 +83,5 @@
       "options": ["2", "3", "4"],
       "answerIndex": 1
     }
-  },
-  {
-    "id": "multiplication-basics-en",
-    "group": "math-03",
-    "language": "en",
-    "subjectId": "mathematics",
-    "subjectTitle": "Mathematics",
-    "chapterId": "math-basics",
-    "chapterTitle": "Math Basics",
-    "order": 3,
-    "title": "Multiplication Basics",
-    "content": "Multiplication is repeated addition. Example: 3 × 2 = 6.",
-    "quiz": {
-      "question": "3 × 2 equals?",
-      "options": ["5", "6", "8"],
-      "answerIndex": 1
-    }
   }
 ]

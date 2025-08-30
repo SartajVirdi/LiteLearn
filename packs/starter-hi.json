@@ -83,22 +83,5 @@
       "options": ["2", "3", "4"],
       "answerIndex": 1
     }
-  },
-  {
-    "id": "multiplication-basics-hi",
-    "group": "math-03",
-    "language": "hi",
-    "subjectId": "mathematics",
-    "subjectTitle": "गणित",
-    "chapterId": "math-basics",
-    "chapterTitle": "गणित की मूल बातें",
-    "order": 3,
-    "title": "गुणा की मूल बातें",
-    "content": "गुणा बार-बार जोड़ना है। उदाहरण: 3 × 2 = 6।",
-    "quiz": {
-      "question": "3 × 2 कितना होता है?",
-      "options": ["5", "6", "8"],
-      "answerIndex": 1
-    }
   }
 ]
