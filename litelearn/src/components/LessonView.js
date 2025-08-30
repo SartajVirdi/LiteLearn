@@ -8,62 +8,52 @@ import TTS from "./TTS";
 
 export default function LessonView() {
   const { id } = useParams();
-  const [packs, setPacks] = useState([]);
-  const [imports, setImports] = useState([]);
+  const [allLessons, setAllLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const lang = getLang();
 
   useEffect(() => {
-    // Load cached packs + imports
-    const cachedPacks = JSON.parse(localStorage.getItem("litelearn_packs") || "[]");
-    const cachedImports = JSON.parse(localStorage.getItem("litelearn_imports") || "[]");
-    if (cachedPacks.length) setPacks(cachedPacks);
-    if (cachedImports.length) setImports(cachedImports);
-    if (cachedPacks.length || cachedImports.length) setLoading(false);
-
-    // Refresh packs (updates cache)
+    const cached = localStorage.getItem("litelearn_lessons");
+    if (cached) {
+      try {
+        setAllLessons(JSON.parse(cached));
+        setLoading(false);
+      } catch {}
+    }
     loadPacks()
       .then((ls) => {
-        setPacks(ls);
-        localStorage.setItem("litelearn_packs", JSON.stringify(ls));
+        setAllLessons(ls);
+        localStorage.setItem("litelearn_lessons", JSON.stringify(ls));
       })
-      .catch(() => { /* offline fallback */ })
       .finally(() => setLoading(false));
   }, []);
 
-  const allLessons = [...packs, ...imports];
-
-  // Helper: find by id, then prefer same group in current language
   const lesson = useMemo(() => {
     if (!allLessons.length) return null;
     const byId = allLessons.find((l) => l.id === id);
     if (!byId) return null;
     const group = byId.group || byId.id;
 
-    // exact language match
     const exact = allLessons.find(
       (l) => (l.group || l.id) === group && l.language === lang
     );
     if (exact) return exact;
 
-    // fallback to English, then any
     return (
-      allLessons.find((l) => (l.group || l.id) === group && l.language === "en") ||
-      byId
+      allLessons.find(
+        (l) => (l.group || l.id) === group && l.language === "en"
+      ) || byId
     );
   }, [allLessons, id, lang]);
 
   const [selected, setSelected] = useState(null);
   const [checked, setChecked] = useState(false);
 
-  if (loading && !lesson) {
-    return <div style={{ padding: 24 }}>Loading lesson…</div>;
-  }
-  if (!lesson) {
-    return <div style={{ padding: 24 }}>Lesson not found.</div>;
-  }
+  if (loading && !lesson) return <div style={{ padding: 24 }}>Loading lesson…</div>;
+  if (!lesson) return <div style={{ padding: 24 }}>Lesson not found.</div>;
 
   const isCorrect = selected === lesson.quiz.answerIndex;
+  const groupKey = lesson.group || lesson.id;
 
   return (
     <main id="main" style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
@@ -86,7 +76,6 @@ export default function LessonView() {
           overflow: "hidden",
         }}
       >
-        {/* Title bar */}
         <div
           id="quiz-heading"
           style={{
@@ -119,8 +108,10 @@ export default function LessonView() {
           <button
             onClick={() => {
               setChecked(true);
-              updateMastery(`${lesson.id}-q1`, isCorrect);
-              if (isCorrect) markCompleted(lesson);
+              if (isCorrect) {
+                updateMastery(`${groupKey}-q1`, true);
+                markCompleted(groupKey);
+              }
             }}
             disabled={selected === null}
             style={{ marginTop: 8 }}

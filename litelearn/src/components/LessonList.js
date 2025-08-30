@@ -1,4 +1,3 @@
-// src/components/LessonList.js
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { loadPacks } from "../packLoader";
@@ -20,24 +19,19 @@ export default function LessonList() {
         setLoading(false);
       } catch {}
     }
-
     loadPacks()
       .then((ls) => {
         setLessons(ls);
         localStorage.setItem("litelearn_lessons", JSON.stringify(ls));
       })
-      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
-  // Filter by language; fallback to English
   const toShow = useMemo(() => {
     const filtered = lessons.filter(
       (l) => (l.language || "").toLowerCase() === currentLang
     );
-    return filtered.length
-      ? filtered
-      : lessons.filter((l) => (l.language || "").toLowerCase() === "en");
+    return filtered.length ? filtered : lessons.filter((l) => (l.language || "").toLowerCase() === "en");
   }, [lessons, currentLang]);
 
   if (loading && lessons.length === 0) {
@@ -49,28 +43,11 @@ export default function LessonList() {
     );
   }
 
-  // Translate badges
-  const labels = {
-    later: currentLang === "hi" ? "बाद में" : "Later",
-    completed: currentLang === "hi" ? "पूर्ण" : "Completed",
-  };
-
   return (
     <div style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
       <h2 style={{ marginBottom: 8 }}>Lessons</h2>
       <p style={{ opacity: 0.8, marginTop: 0 }}>
         Works offline. Your progress saves on this device.
-      </p>
-
-      {/* Teacher demo CSV download */}
-      <p style={{ marginTop: 6 }}>
-        <a
-          href={process.env.PUBLIC_URL + "/teacher-demo.csv"}
-          download
-          style={{ textDecoration: "none" }}
-        >
-          📥 Download teacher-demo.csv
-        </a>
       </p>
 
       {(() => {
@@ -82,47 +59,33 @@ export default function LessonList() {
           const cId = l.chapterId || "general";
           const cTitle = l.chapterTitle || "General";
 
-          if (!subjects.has(sId))
-            subjects.set(sId, { title: sTitle, chapters: new Map() });
+          if (!subjects.has(sId)) subjects.set(sId, { title: sTitle, chapters: new Map() });
           const subj = subjects.get(sId);
-          if (!subj.chapters.has(cId))
-            subj.chapters.set(cId, { title: cTitle, items: [] });
+          if (!subj.chapters.has(cId)) subj.chapters.set(cId, { title: cTitle, items: [] });
           subj.chapters.get(cId).items.push(l);
         }
 
         return [...subjects.entries()].map(([sId, subj]) => (
-          <section key={sId} style={{ marginBottom: 32 }}>
-            <h2 style={{ margin: "8px 0 12px", borderBottom: "2px solid #ddd" }}>
-              {subj.title}
-            </h2>
-
+          <section key={sId} style={{ marginBottom: 28 }}>
+            <h2 style={{ margin: "8px 0 12px" }}>{subj.title}</h2>
             {[...subj.chapters.entries()].map(([cId, chap]) => {
               chap.items.sort(
-                (a, b) =>
-                  (a.order ?? 999) - (b.order ?? 999) ||
-                  a.title.localeCompare(b.title)
+                (a, b) => (a.order ?? 999) - (b.order ?? 999) || a.title.localeCompare(b.title)
               );
-              const completed = chap.items.filter((l) => isCompleted(l)).length;
+              const completed = chap.items.filter((x) => isCompleted(x.group || x.id)).length;
               const total = chap.items.length;
               const pct = Math.round((completed / Math.max(1, total)) * 100);
 
               return (
-                <article key={cId} style={{ marginBottom: 24 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: 8,
-                    }}
-                  >
+                <article key={cId} style={{ marginBottom: 18 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                     <h3 style={{ margin: 0 }}>{chap.title}</h3>
                     <span
                       style={{
-                        fontSize: 13,
-                        padding: "4px 10px",
+                        fontSize: 12,
+                        padding: "2px 8px",
+                        border: "1px solid #999",
                         borderRadius: 999,
-                        background: "#eee",
                       }}
                     >
                       {completed}/{total} • {pct}%
@@ -131,85 +94,42 @@ export default function LessonList() {
 
                   <ul style={{ listStyle: "none", padding: 0 }}>
                     {chap.items.map((l) => {
-                      const dueKey = `${l.id}-q1`;
+                      const groupKey = l.group || l.id;
+                      const dueKey = `${groupKey}-q1`;
                       const isDue = dueNow(dueKey);
-                      const completedFlag = isCompleted(l);
+                      const completedFlag = isCompleted(groupKey);
 
                       return (
                         <li
                           key={l.id}
                           className="card"
                           style={{
-                            border: "1px solid #ccc",
+                            border: "1px solid #333",
                             borderRadius: 12,
                             padding: 16,
                             marginBottom: 12,
-                            boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-                            opacity: isDue ? 1 : 0.55, // fade works for both en + hi
+                            opacity: isDue ? 1 : 0.55,
                           }}
                         >
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              flexWrap: "wrap",
-                              gap: 10,
-                            }}
-                          >
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                             <div>
                               <strong>{l.title}</strong>
-                              <span
-                                style={{
-                                  marginLeft: 8,
-                                  fontSize: 12,
-                                  padding: "2px 8px",
-                                  border: "1px solid #999",
-                                  borderRadius: 999,
-                                  opacity: 0.8,
-                                }}
-                              >
+                              <span style={{ marginLeft: 8, fontSize: 12, padding: "2px 8px", border: "1px solid #999", borderRadius: 999, opacity: 0.8 }}>
                                 {(l.language || "").toUpperCase()}
                               </span>
-
                               {completedFlag && (
-                                <span
-                                  style={{
-                                    marginLeft: 8,
-                                    fontSize: 12,
-                                    padding: "2px 8px",
-                                    background: "#5c5",
-                                    color: "#fff",
-                                    borderRadius: 999,
-                                  }}
-                                >
-                                  ✓ {labels.completed}
+                                <span style={{ marginLeft: 8, fontSize: 12, padding: "2px 8px", border: "1px solid #5c5", borderRadius: 999 }}>
+                                  ✓ Completed
                                 </span>
                               )}
-
-                              {!isDue && (
-                                <span
-                                  style={{
-                                    marginLeft: 8,
-                                    fontSize: 12,
-                                    padding: "2px 8px",
-                                    background: "#aaa",
-                                    color: "#fff",
-                                    borderRadius: 999,
-                                  }}
-                                >
-                                  {labels.later}
+                              {!isDue && !completedFlag && (
+                                <span style={{ marginLeft: 8, fontSize: 12, padding: "2px 8px", border: "1px solid #aaa", borderRadius: 999, opacity: 0.8 }}>
+                                  {currentLang === "hi" ? "बाद में" : "Later"}
                                 </span>
                               )}
                             </div>
-
-                            <Link
-                              to={`/lesson/${l.id}`}
-                              style={{ textDecoration: "none" }}
-                            >
-                              <button aria-label={`Open lesson ${l.title}`}>
-                                Open
-                              </button>
+                            <Link to={`/lesson/${l.id}`} style={{ textDecoration: "none" }}>
+                              <button aria-label={`Open lesson ${l.title}`}>Open</button>
                             </Link>
                           </div>
                         </li>
@@ -227,10 +147,7 @@ export default function LessonList() {
         onAdd={(generated) => {
           const next = [...lessons, ...generated];
           setLessons(next);
-          localStorage.setItem(
-            "litelearn_lessons",
-            JSON.stringify(next)
-          );
+          localStorage.setItem("litelearn_lessons", JSON.stringify(next));
         }}
       />
     </div>
