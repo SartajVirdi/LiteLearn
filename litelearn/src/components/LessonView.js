@@ -1,4 +1,3 @@
-// src/components/LessonView.js
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { loadPacks } from "../packLoader";
@@ -9,34 +8,32 @@ import TTS from "./TTS";
 
 export default function LessonView() {
   const { id } = useParams();
-  const [allLessons, setAllLessons] = useState([]);
+  const [packs, setPacks] = useState([]);
+  const [imports, setImports] = useState([]);
   const [loading, setLoading] = useState(true);
   const lang = getLang();
 
   useEffect(() => {
-    // 1) load cached lessons first (instant + offline)
-    const cached = localStorage.getItem("litelearn_lessons");
-    if (cached) {
-      try {
-        setAllLessons(JSON.parse(cached));
-        setLoading(false);
-      } catch {
-        /* ignore bad cache */
-      }
-    }
-    // 2) refresh from packs (updates cache)
+    // Load cached packs + imports
+    const cachedPacks = JSON.parse(localStorage.getItem("litelearn_packs") || "[]");
+    const cachedImports = JSON.parse(localStorage.getItem("litelearn_imports") || "[]");
+    if (cachedPacks.length) setPacks(cachedPacks);
+    if (cachedImports.length) setImports(cachedImports);
+    if (cachedPacks.length || cachedImports.length) setLoading(false);
+
+    // Refresh packs (updates cache)
     loadPacks()
       .then((ls) => {
-        setAllLessons(ls);
-        localStorage.setItem("litelearn_lessons", JSON.stringify(ls));
+        setPacks(ls);
+        localStorage.setItem("litelearn_packs", JSON.stringify(ls));
       })
-      .catch(() => {
-        /* keep cache if fetch fails */
-      })
+      .catch(() => { /* offline fallback */ })
       .finally(() => setLoading(false));
   }, []);
 
-  // Helper: find by id → then pick same group in current language (fallback to EN/any)
+  const allLessons = [...packs, ...imports];
+
+  // Helper: find by id, then prefer same group in current language
   const lesson = useMemo(() => {
     if (!allLessons.length) return null;
     const byId = allLessons.find((l) => l.id === id);
@@ -49,11 +46,10 @@ export default function LessonView() {
     );
     if (exact) return exact;
 
-    // fallback to English, then any in the group
+    // fallback to English, then any
     return (
-      allLessons.find(
-        (l) => (l.group || l.id) === group && l.language === "en"
-      ) || byId
+      allLessons.find((l) => (l.group || l.id) === group && l.language === "en") ||
+      byId
     );
   }, [allLessons, id, lang]);
 
@@ -67,18 +63,7 @@ export default function LessonView() {
     return <div style={{ padding: 24 }}>Lesson not found.</div>;
   }
 
-  // --- DEBUG LOG ---
-  console.log("Debug lesson object:", lesson);
-
-  // Safe answerIndex
-  const validAnswerIndex =
-    typeof lesson.quiz?.answerIndex === "number" &&
-    lesson.quiz.answerIndex >= 0 &&
-    lesson.quiz.answerIndex < (lesson.quiz?.options?.length || 0)
-      ? lesson.quiz.answerIndex
-      : 0;
-
-  const isCorrect = selected === validAnswerIndex;
+  const isCorrect = selected === lesson.quiz.answerIndex;
 
   return (
     <main id="main" style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
@@ -90,7 +75,7 @@ export default function LessonView() {
         {lesson.title} <TTS text={lesson.content} />
       </h1>
 
-      <p style={{ lineHeight: 1.6 }}>{lesson.content || "⚠️ No content found."}</p>
+      <p style={{ lineHeight: 1.6 }}>{lesson.content}</p>
 
       <section
         aria-labelledby="quiz-heading"
@@ -98,7 +83,7 @@ export default function LessonView() {
           marginTop: 24,
           border: "1px solid #333",
           borderRadius: 12,
-          overflow: "hidden"
+          overflow: "hidden",
         }}
       >
         {/* Title bar */}
@@ -108,61 +93,48 @@ export default function LessonView() {
             background: "var(--card-header, #f0f0f0)",
             padding: "10px 16px",
             borderBottom: "1px solid #333",
-            fontSize: "16px"
+            fontSize: "16px",
           }}
         >
           Test Yourself
         </div>
 
         <div style={{ padding: 16 }}>
-          {lesson.quiz?.question ? (
-            <>
-              <p style={{ marginTop: 0 }}>{lesson.quiz.question}</p>
+          <p style={{ marginTop: 0 }}>{lesson.quiz.question}</p>
 
-              {lesson.quiz.options?.length > 0 ? (
-                lesson.quiz.options.map((opt, idx) => (
-                  <label
-                    key={idx}
-                    style={{ display: "block", marginBottom: 8, cursor: "pointer" }}
-                  >
-                    <input
-                      type="radio"
-                      name="quiz"
-                      checked={selected === idx}
-                      onChange={() => setSelected(idx)}
-                      aria-label={`Option ${idx + 1}: ${opt}`}
-                      style={{ marginRight: 8 }}
-                    />
-                    {opt}
-                  </label>
-                ))
-              ) : (
-                <p style={{ color: "red" }}>⚠️ No quiz options provided.</p>
-              )}
+          {lesson.quiz.options.map((opt, idx) => (
+            <label key={idx} style={{ display: "block", marginBottom: 8, cursor: "pointer" }}>
+              <input
+                type="radio"
+                name="quiz"
+                checked={selected === idx}
+                onChange={() => setSelected(idx)}
+                aria-label={`Option ${idx + 1}: ${opt}`}
+                style={{ marginRight: 8 }}
+              />
+              {opt}
+            </label>
+          ))}
 
-              <button
-                onClick={() => {
-                  setChecked(true);
-                  updateMastery(`${lesson.id}-q1`, isCorrect);
-                  if (isCorrect) markCompleted(lesson);
-                }}
-                disabled={selected === null}
-                style={{ marginTop: 8 }}
-                aria-label="Check selected quiz answer"
-              >
-                Check answer
-              </button>
+          <button
+            onClick={() => {
+              setChecked(true);
+              updateMastery(`${lesson.id}-q1`, isCorrect);
+              if (isCorrect) markCompleted(lesson);
+            }}
+            disabled={selected === null}
+            style={{ marginTop: 8 }}
+            aria-label="Check selected quiz answer"
+          >
+            Check answer
+          </button>
 
-              {checked && (
-                <p style={{ marginTop: 12, fontWeight: "bold" }}>
-                  {isCorrect
-                    ? "✅ Correct! Marked as completed."
-                    : "❌ Not quite. Try another option."}
-                </p>
-              )}
-            </>
-          ) : (
-            <p style={{ color: "red" }}>⚠️ This lesson has no quiz question.</p>
+          {checked && (
+            <p style={{ marginTop: 12, fontWeight: "bold" }}>
+              {isCorrect
+                ? "✅ Correct! Marked as completed."
+                : "❌ Not quite. Try another option."}
+            </p>
           )}
         </div>
       </section>
