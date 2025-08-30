@@ -16,6 +16,41 @@ LiteLearn bridges this gap with a lightweight, offline-first Progressive Web App
 
 ---
 
+## Setup & Deployment  
+
+### Prerequisites
+- Node.js (v16 or later recommended)  
+- npm or yarn installed  
+
+### Run Locally
+```bash
+git clone https://github.com/SartajVirdi/LiteLearn.git
+cd LiteLearn
+npm install
+npm start
+```
+This runs the app at http://localhost:3000/.
+### Build for Production
+```bash
+npm run build
+```
+### Deploy to GitHub Pages
+```bash
+npm run deploy
+```
+
+---
+
+## Demonstration  
+1. Launch LiteLearn – Homepage with logo, language switch, offline badge  
+2. Open a Lesson – Lesson content with Text-to-Speech  
+3. Test Yourself Quiz – Adaptive spaced repetition in action  
+4. Teacher Mode – Upload CSV or Try Demo CSV for instant lessons  
+5. Go Offline – Lessons and progress still work  
+6. Install Prompt – Install LiteLearn as a PWA  
+
+---
+
 ## Key Features  
 - **Offline-First PWA** – Lessons, progress, and teacher-imported content work without internet.  
 - **Bilingual Support (English & Hindi)** – Instant toggle between languages.  
@@ -91,33 +126,3 @@ LiteLearn bridges this gap with a lightweight, offline-first Progressive Web App
 - Cloud sync for multi-device progress (optional)  
 - Teacher analytics dashboard  
 - Community-driven lesson packs  
-
----
-
-## Demonstration  
-1. Launch LiteLearn – Homepage with logo, language switch, offline badge  
-2. Open a Lesson – Lesson content with Text-to-Speech  
-3. Test Yourself Quiz – Adaptive spaced repetition in action  
-4. Teacher Mode – Upload CSV or Try Demo CSV for instant lessons  
-5. Go Offline – Lessons and progress still work  
-6. Install Prompt – Install LiteLearn as a PWA  
-
----
-
-## Setup & Deployment  
-
-### Run Locally  
-```bash
-git clone https://github.com/SartajVirdi/LiteLearn.git
-cd LiteLearn
-npm install
-npm start
-```
-### Build for Production
-```bash
-npm run build
-```
-### Deploy to GitHub Pages
-```bash
-npm run deploy
-```
