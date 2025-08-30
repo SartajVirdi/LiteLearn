@@ -57,6 +57,17 @@ export default function LessonList() {
         Works offline. Your progress saves on this device.
       </p>
 
+      {/* Teacher demo CSV download */}
+      <p style={{ marginTop: 6 }}>
+        <a
+          href={process.env.PUBLIC_URL + "/teacher-demo.csv"}
+          download
+          style={{ textDecoration: "none", fontWeight: "bold" }}
+        >
+          📥 Download sample teacher CSV
+        </a>
+      </p>
+
       {/* Group by Subject -> Chapter */}
       {(() => {
         const subjects = new Map();
