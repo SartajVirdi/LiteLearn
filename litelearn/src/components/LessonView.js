@@ -84,51 +84,65 @@ export default function LessonView() {
         aria-labelledby="quiz-heading"
         style={{
           marginTop: 24,
-          padding: 16,
           border: "1px solid #333",
           borderRadius: 12,
+          overflow: "hidden"
         }}
       >
-        <h2 id="quiz-heading">Quick Check</h2>
-        <p style={{ marginTop: 12 }}>{lesson.quiz.question}</p>
-
-        {lesson.quiz.options.map((opt, idx) => (
-          <label
-            key={idx}
-            style={{ display: "block", marginBottom: 8, cursor: "pointer" }}
-          >
-            <input
-              type="radio"
-              name="quiz"
-              checked={selected === idx}
-              onChange={() => setSelected(idx)}
-              aria-label={'Option ${idx + 1}:${opt}'}
-              style={{ marginRight: 8 }}
-            />
-            {opt}
-          </label>
-        ))}
-
-        <button
-          onClick={() => {
-            setChecked(true);
-            updateMastery('${lesson.id}-q1, isCorrect');
-            if (isCorrect) markCompleted(lesson);           // best (stores group + id)
+        {/* Title bar */}
+        <div
+          id="quiz-heading"
+          style={{
+            background: "var(--card-header, #f0f0f0)",
+            padding: "10px 16px",
+            borderBottom: "1px solid #333",
+            fontSize: "16px"
           }}
-          disabled={selected === null}
-          style={{ marginTop: 8 }}
-          aria-label="Check selected quiz answer"
         >
-          Check answer
-        </button>
+          Test Yourself
+        </div>
 
-        {checked && (
-          <p style={{ marginTop: 12, fontWeight: "bold" }}>
-            {isCorrect
-              ? "✅ Correct! Marked as completed."
-              : "❌ Not quite. Try another option."}
-          </p>
-        )}
+        <div style={{ padding: 16 }}>
+          <p style={{ marginTop: 0 }}>{lesson.quiz.question}</p>
+
+          {lesson.quiz.options.map((opt, idx) => (
+            <label
+              key={idx}
+              style={{ display: "block", marginBottom: 8, cursor: "pointer" }}
+            >
+              <input
+                type="radio"
+                name="quiz"
+                checked={selected === idx}
+                onChange={() => setSelected(idx)}
+                aria-label={`Option ${idx + 1}: ${opt}`}
+                style={{ marginRight: 8 }}
+              />
+              {opt}
+            </label>
+          ))}
+
+          <button
+            onClick={() => {
+              setChecked(true);
+              updateMastery(`${lesson.id}-q1`, isCorrect);
+              if (isCorrect) markCompleted(lesson);
+            }}
+            disabled={selected === null}
+            style={{ marginTop: 8 }}
+            aria-label="Check selected quiz answer"
+          >
+            Check answer
+          </button>
+
+          {checked && (
+            <p style={{ marginTop: 12, fontWeight: "bold" }}>
+              {isCorrect
+                ? "✅ Correct! Marked as completed."
+                : "❌ Not quite. Try another option."}
+            </p>
+          )}
+        </div>
       </section>
     </main>
   );

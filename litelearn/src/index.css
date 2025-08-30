@@ -52,6 +52,28 @@ body.high-contrast li {
   border-color: #fff !important;
 }
 
+/* --- Card headers (like "Test Yourself") --- */
+:root {
+  --card-header: #f0f0f0;   /* light mode */
+}
+
+.card-header {
+  background: var(--card-header);
+  padding: 10px 16px;
+  border-bottom: 1px solid #333;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* In high-contrast mode, adapt colors */
+body.high-contrast {
+  --card-header: #222;
+}
+body.high-contrast .card-header {
+  color: #fff;
+  border-color: #fff;
+}
+
 /* --- Floating utility buttons (bottom-left) --- */
 .floating-btn {
   position: fixed;
