@@ -1,4 +1,3 @@
-// src/components/LessonList.js
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { loadPacks } from "../packLoader";
@@ -13,39 +12,32 @@ export default function LessonList() {
   const currentLang = getLang();
 
   useEffect(() => {
-    // Load cached (packs + teacher imports) first
-    const cached = localStorage.getItem("litelearn_lessons");
-    if (cached) {
-      try {
-        setLessons(JSON.parse(cached));
-        setLoading(false);
-      } catch {
-        /* ignore bad cache */
-      }
+    // Load cached packs + imports
+    const cachedPacks = JSON.parse(localStorage.getItem("litelearn_packs") || "[]");
+    const cachedImported = JSON.parse(localStorage.getItem("litelearn_imported") || "[]");
+
+    if (cachedPacks.length || cachedImported.length) {
+      setLessons([...cachedPacks, ...cachedImported]);
+      setLoading(false);
     }
 
-    // Refresh from packs (but keep teacher imports merged in)
+    // Always refresh packs from server
     loadPacks()
-      .then((packs) => {
-        const imported = JSON.parse(localStorage.getItem("litelearn_imported") || "[]");
-        const merged = [...packs, ...imported];
-        setLessons(merged);
-        localStorage.setItem("litelearn_lessons", JSON.stringify(merged));
+      .then((ls) => {
+        localStorage.setItem("litelearn_packs", JSON.stringify(ls));
+        const imports = JSON.parse(localStorage.getItem("litelearn_imported") || "[]");
+        setLessons([...ls, ...imports]);
       })
       .catch(() => {
-        // keep cache if fetch fails
+        // keep cache if fetch fails (offline, etc.)
       })
       .finally(() => setLoading(false));
   }, []);
 
   // Filter by current language; fallback to English if no items
   const toShow = useMemo(() => {
-    const filtered = lessons.filter(
-      (l) => (l.language || "").toLowerCase() === currentLang
-    );
-    return filtered.length
-      ? filtered
-      : lessons.filter((l) => (l.language || "").toLowerCase() === "en");
+    const filtered = lessons.filter((l) => (l.language || "").toLowerCase() === currentLang);
+    return filtered.length ? filtered : lessons.filter((l) => (l.language || "").toLowerCase() === "en");
   }, [lessons, currentLang]);
 
   if (loading && lessons.length === 0) {
@@ -63,8 +55,6 @@ export default function LessonList() {
       <p style={{ opacity: 0.8, marginTop: 0 }}>
         Works offline. Your progress saves on this device.
       </p>
-
-      {/* Teacher demo CSV download */}
       <p style={{ marginTop: 6 }}>
         <a
           href={process.env.PUBLIC_URL + "/teacher-demo.csv"}
@@ -77,7 +67,7 @@ export default function LessonList() {
 
       {/* Group by Subject -> Chapter */}
       {(() => {
-        const subjects = new Map();
+        const subjects = new Map(); // subjectId -> { title, chapters: Map }
 
         for (const l of toShow) {
           const sId = l.subjectId || "general";
@@ -85,11 +75,9 @@ export default function LessonList() {
           const cId = l.chapterId || "general";
           const cTitle = l.chapterTitle || "General";
 
-          if (!subjects.has(sId))
-            subjects.set(sId, { title: sTitle, chapters: new Map() });
+          if (!subjects.has(sId)) subjects.set(sId, { title: sTitle, chapters: new Map() });
           const subj = subjects.get(sId);
-          if (!subj.chapters.has(cId))
-            subj.chapters.set(cId, { title: cTitle, items: [] });
+          if (!subj.chapters.has(cId)) subj.chapters.set(cId, { title: cTitle, items: [] });
           subj.chapters.get(cId).items.push(l);
         }
 
@@ -101,9 +89,7 @@ export default function LessonList() {
 
             {[...subj.chapters.entries()].map(([cId, chap]) => {
               chap.items.sort(
-                (a, b) =>
-                  (a.order ?? 999) - (b.order ?? 999) ||
-                  a.title.localeCompare(b.title)
+                (a, b) => (a.order ?? 999) - (b.order ?? 999) || a.title.localeCompare(b.title)
               );
               const completed = chap.items.filter(done).length;
               const total = chap.items.length;
@@ -204,13 +190,8 @@ export default function LessonList() {
                               )}
                             </div>
 
-                            <Link
-                              to={`/lesson/${l.id}`}
-                              style={{ textDecoration: "none" }}
-                            >
-                              <button aria-label={`Open lesson ${l.title}`}>
-                                Open
-                              </button>
+                            <Link to={`/lesson/${l.id}`} style={{ textDecoration: "none" }}>
+                              <button aria-label={`Open lesson ${l.title}`}>Open</button>
                             </Link>
                           </div>
                         </li>
@@ -227,14 +208,12 @@ export default function LessonList() {
       {/* 📥 Teacher CSV Importer */}
       <TeacherImport
         onAdd={(generated) => {
-          // Keep imported lessons in a separate key too
-          const imported = JSON.parse(localStorage.getItem("litelearn_imported") || "[]");
-          const nextImported = [...imported, ...generated];
-          localStorage.setItem("litelearn_imported", JSON.stringify(nextImported));
+          const imports = JSON.parse(localStorage.getItem("litelearn_imported") || "[]");
+          const updated = [...imports, ...generated];
+          localStorage.setItem("litelearn_imported", JSON.stringify(updated));
 
-          const next = [...lessons, ...generated];
-          setLessons(next);
-          localStorage.setItem("litelearn_lessons", JSON.stringify(next));
+          const packs = JSON.parse(localStorage.getItem("litelearn_packs") || "[]");
+          setLessons([...packs, ...updated]);
         }}
       />
     </div>
