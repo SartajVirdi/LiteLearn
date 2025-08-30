@@ -125,4 +125,11 @@ npm run deploy
 - Gamification (badges, streaks)  
 - Cloud sync for multi-device progress (optional)  
 - Teacher analytics dashboard  
-- Community-driven lesson packs  
+- Community-driven lesson packs
+
+---
+
+## Development Notes
+
+This project was built and tested using *GitHub Codespaces*.  
+This ensured a consistent cloud-based development environment with no local setup required.
