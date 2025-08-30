@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/LiteLearn/static/css/main.ba1281de.css",
-    "main.js": "/LiteLearn/static/js/main.75dbdd10.js",
+    "main.css": "/LiteLearn/static/css/main.f68f7403.css",
+    "main.js": "/LiteLearn/static/js/main.3410e5c1.js",
     "static/js/488.fdfdc231.chunk.js": "/LiteLearn/static/js/488.fdfdc231.chunk.js",
     "service-worker.js": "/LiteLearn/service-worker.js",
     "index.html": "/LiteLearn/index.html",
-    "main.ba1281de.css.map": "/LiteLearn/static/css/main.ba1281de.css.map",
-    "main.75dbdd10.js.map": "/LiteLearn/static/js/main.75dbdd10.js.map",
+    "main.f68f7403.css.map": "/LiteLearn/static/css/main.f68f7403.css.map",
+    "main.3410e5c1.js.map": "/LiteLearn/static/js/main.3410e5c1.js.map",
     "488.fdfdc231.chunk.js.map": "/LiteLearn/static/js/488.fdfdc231.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.ba1281de.css",
-    "static/js/main.75dbdd10.js"
+    "static/css/main.f68f7403.css",
+    "static/js/main.3410e5c1.js"
   ]
 }
