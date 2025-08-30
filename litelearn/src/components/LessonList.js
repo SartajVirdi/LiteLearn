@@ -1,3 +1,4 @@
+// src/components/LessonList.js
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { loadPacks } from "../packLoader";
@@ -72,7 +73,7 @@ export default function LessonList() {
               chap.items.sort(
                 (a, b) => (a.order ?? 999) - (b.order ?? 999) || a.title.localeCompare(b.title)
               );
-              const completed = chap.items.filter((x) => isCompleted(x.group || x.id)).length;
+              const completed = chap.items.filter((x) => isCompleted(x)).length;
               const total = chap.items.length;
               const pct = Math.round((completed / Math.max(1, total)) * 100);
 
@@ -96,8 +97,8 @@ export default function LessonList() {
                     {chap.items.map((l) => {
                       const groupKey = l.group || l.id;
                       const dueKey = `${groupKey}-q1`;
+                      const completedFlag = isCompleted(l);
                       const isDue = dueNow(dueKey);
-                      const completedFlag = isCompleted(groupKey);
 
                       return (
                         <li
@@ -108,7 +109,11 @@ export default function LessonList() {
                             borderRadius: 12,
                             padding: 16,
                             marginBottom: 12,
-                            opacity: isDue ? 1 : 0.55,
+                            opacity: completedFlag
+                              ? isDue
+                                ? 1
+                                : 0.55 // fade only if completed but not yet due
+                              : 1,
                           }}
                         >
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
@@ -122,8 +127,17 @@ export default function LessonList() {
                                   ✓ Completed
                                 </span>
                               )}
-                              {!isDue && !completedFlag && (
-                                <span style={{ marginLeft: 8, fontSize: 12, padding: "2px 8px", border: "1px solid #aaa", borderRadius: 999, opacity: 0.8 }}>
+                              {completedFlag && !isDue && (
+                                <span
+                                  style={{
+                                    marginLeft: 8,
+                                    fontSize: 12,
+                                    padding: "2px 8px",
+                                    border: "1px solid #aaa",
+                                    borderRadius: 999,
+                                    opacity: 0.8,
+                                  }}
+                                >
                                   {currentLang === "hi" ? "बाद में" : "Later"}
                                 </span>
                               )}
