@@ -13,33 +13,31 @@ export default function LessonList() {
   const currentLang = getLang();
 
   useEffect(() => {
-    // 1) Load cached lessons first
     const cached = localStorage.getItem("litelearn_lessons");
     if (cached) {
       try {
         setLessons(JSON.parse(cached));
         setLoading(false);
-      } catch {
-        /* ignore bad cache */
-      }
+      } catch {}
     }
 
-    // 2) Fetch packs and update cache
     loadPacks()
       .then((ls) => {
         setLessons(ls);
         localStorage.setItem("litelearn_lessons", JSON.stringify(ls));
       })
-      .catch(() => {
-        // keep cache if fetch fails (offline etc.)
-      })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
-  // Filter by language, fallback to English
+  // Filter by language; fallback to English
   const toShow = useMemo(() => {
-    const filtered = lessons.filter((l) => (l.language || "").toLowerCase() === currentLang);
-    return filtered.length ? filtered : lessons.filter((l) => (l.language || "").toLowerCase() === "en");
+    const filtered = lessons.filter(
+      (l) => (l.language || "").toLowerCase() === currentLang
+    );
+    return filtered.length
+      ? filtered
+      : lessons.filter((l) => (l.language || "").toLowerCase() === "en");
   }, [lessons, currentLang]);
 
   if (loading && lessons.length === 0) {
@@ -51,8 +49,11 @@ export default function LessonList() {
     );
   }
 
-  // Translate "Later" → "बाद में" if Hindi is active
-  const laterLabel = currentLang === "hi" ? "बाद में" : "Later";
+  // Translate badges
+  const labels = {
+    later: currentLang === "hi" ? "बाद में" : "Later",
+    completed: currentLang === "hi" ? "पूर्ण" : "Completed",
+  };
 
   return (
     <div style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
@@ -72,7 +73,6 @@ export default function LessonList() {
         </a>
       </p>
 
-      {/* Group lessons by Subject → Chapter */}
       {(() => {
         const subjects = new Map();
 
@@ -82,23 +82,27 @@ export default function LessonList() {
           const cId = l.chapterId || "general";
           const cTitle = l.chapterTitle || "General";
 
-          if (!subjects.has(sId)) subjects.set(sId, { title: sTitle, chapters: new Map() });
+          if (!subjects.has(sId))
+            subjects.set(sId, { title: sTitle, chapters: new Map() });
           const subj = subjects.get(sId);
-          if (!subj.chapters.has(cId)) subj.chapters.set(cId, { title: cTitle, items: [] });
+          if (!subj.chapters.has(cId))
+            subj.chapters.set(cId, { title: cTitle, items: [] });
           subj.chapters.get(cId).items.push(l);
         }
 
-        const done = (lesson) => isCompleted(lesson);
-
         return [...subjects.entries()].map(([sId, subj]) => (
           <section key={sId} style={{ marginBottom: 32 }}>
-            <h2 style={{ margin: "8px 0 12px", borderBottom: "2px solid #ddd" }}>{subj.title}</h2>
+            <h2 style={{ margin: "8px 0 12px", borderBottom: "2px solid #ddd" }}>
+              {subj.title}
+            </h2>
 
             {[...subj.chapters.entries()].map(([cId, chap]) => {
               chap.items.sort(
-                (a, b) => (a.order ?? 999) - (b.order ?? 999) || a.title.localeCompare(b.title)
+                (a, b) =>
+                  (a.order ?? 999) - (b.order ?? 999) ||
+                  a.title.localeCompare(b.title)
               );
-              const completed = chap.items.filter(done).length;
+              const completed = chap.items.filter((l) => isCompleted(l)).length;
               const total = chap.items.length;
               const pct = Math.round((completed / Math.max(1, total)) * 100);
 
@@ -120,7 +124,6 @@ export default function LessonList() {
                         borderRadius: 999,
                         background: "#eee",
                       }}
-                      aria-label={`Chapter progress ${completed} of ${total}`}
                     >
                       {completed}/{total} • {pct}%
                     </span>
@@ -130,7 +133,7 @@ export default function LessonList() {
                     {chap.items.map((l) => {
                       const dueKey = `${l.id}-q1`;
                       const isDue = dueNow(dueKey);
-                      const completedFlag = done(l);
+                      const completedFlag = isCompleted(l);
 
                       return (
                         <li
@@ -142,7 +145,7 @@ export default function LessonList() {
                             padding: 16,
                             marginBottom: 12,
                             boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-                            opacity: isDue ? 1 : 0.55,
+                            opacity: isDue ? 1 : 0.55, // fade works for both en + hi
                           }}
                         >
                           <div
@@ -168,6 +171,7 @@ export default function LessonList() {
                               >
                                 {(l.language || "").toUpperCase()}
                               </span>
+
                               {completedFlag && (
                                 <span
                                   style={{
@@ -179,10 +183,11 @@ export default function LessonList() {
                                     borderRadius: 999,
                                   }}
                                 >
-                                  ✓ Completed
+                                  ✓ {labels.completed}
                                 </span>
                               )}
-                              {!isDue && !completedFlag && (
+
+                              {!isDue && (
                                 <span
                                   style={{
                                     marginLeft: 8,
@@ -192,15 +197,19 @@ export default function LessonList() {
                                     color: "#fff",
                                     borderRadius: 999,
                                   }}
-                                  title="Scheduled later by adaptive practice"
                                 >
-                                  {laterLabel}
+                                  {labels.later}
                                 </span>
                               )}
                             </div>
 
-                            <Link to={`/lesson/${l.id}`} style={{ textDecoration: "none" }}>
-                              <button aria-label={`Open lesson ${l.title}`}>Open</button>
+                            <Link
+                              to={`/lesson/${l.id}`}
+                              style={{ textDecoration: "none" }}
+                            >
+                              <button aria-label={`Open lesson ${l.title}`}>
+                                Open
+                              </button>
                             </Link>
                           </div>
                         </li>
@@ -214,12 +223,14 @@ export default function LessonList() {
         ));
       })()}
 
-      {/* Teacher CSV Import */}
       <TeacherImport
         onAdd={(generated) => {
           const next = [...lessons, ...generated];
           setLessons(next);
-          localStorage.setItem("litelearn_lessons", JSON.stringify(next));
+          localStorage.setItem(
+            "litelearn_lessons",
+            JSON.stringify(next)
+          );
         }}
       />
     </div>
