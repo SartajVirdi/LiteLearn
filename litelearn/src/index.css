@@ -47,3 +47,8 @@ body.high-contrast li {
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+#main:focus {
+  outline: 3px solid #007acc; /* blue focus ring */
+  scroll-margin-top: 20px; /* avoid sticking to top */
+}

@@ -14,6 +14,7 @@ import InstallPrompt from "./components/InstallPrompt";
 export default function App() {
   return (
     <BrowserRouter>
+      {/* Skip link for screen readers & keyboard users */}
       <SkipToContent />
 
       <header style={{ textAlign: "center", paddingTop: 28 }}>
@@ -29,22 +30,23 @@ export default function App() {
         </div>
 
         <p style={{ marginTop: 6, opacity: 0.8 }}>
-          Learn anytime, anywhere — even offline
+          Learn anytime, anywhere — even offline 🚀
         </p>
 
-        {/* These render as fixed controls (top-right/top-left) per their own styles */}
+        {/* Fixed-position controls (top-left / top-right) */}
         <LanguageSwitch />
         <HighContrastToggle />
       </header>
 
-      {/* Main content is target of the skip link */}
-      <main id="main">
+      {/* Main content area is target of the skip link */}
+      <main id="main" tabIndex="-1">
         <Routes>
           <Route path="/" element={<LessonList />} />
           <Route path="/lesson/:id" element={<LessonView />} />
         </Routes>
       </main>
 
+      {/* Extra utilities */}
       <OfflineBadge />
       <InstallPrompt />
       <ClearImportedLessons />

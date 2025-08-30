@@ -1,15 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 
 export default function SkipToContent() {
-  const [visible, setVisible] = useState(false);
-
   return (
     <a
       href="#main"
       style={{
         position: "absolute",
-        left: visible ? "12px" : "-9999px",
-        top: "12px",
+        left: -9999,
+        top: 0,
         background: "#fff",
         color: "#000",
         padding: "8px 12px",
@@ -17,8 +15,8 @@ export default function SkipToContent() {
         borderRadius: 8,
         zIndex: 2000
       }}
-      onFocus={() => setVisible(true)}
-      onBlur={() => setVisible(false)}
+      onFocus={(e) => { e.target.style.left = "12px"; }}
+      onBlur={(e) => { e.target.style.left = "-9999px"; }}
     >
       Skip to main content
     </a>
