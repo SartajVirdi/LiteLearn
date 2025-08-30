@@ -1,5 +1,7 @@
 # LiteLearn  
-**Learn anytime, anywhere — even offline**  
+*Learn anytime, anywhere — even offline*  
+
+🔗 [Live Demo](https://SartajVirdi.github.io/LiteLearn) 
 
 <p align="left">
   <img src="assets/logo_readme.png" alt="LiteLearn Logo" width="180"/>
