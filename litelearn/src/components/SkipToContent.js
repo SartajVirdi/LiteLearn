@@ -1,13 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function SkipToContent() {
+  const [visible, setVisible] = useState(false);
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    const main = document.getElementById("main");
+    if (main) {
+      main.focus();              // 👈 move keyboard focus
+      main.scrollIntoView({      // 👈 ensure it's scrolled into view
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  };
+
   return (
     <a
       href="#main"
+      onClick={handleClick}
       style={{
         position: "absolute",
-        left: -9999,
-        top: 0,
+        left: visible ? "12px" : "-9999px",
+        top: "12px",
         background: "#fff",
         color: "#000",
         padding: "8px 12px",
@@ -15,8 +30,8 @@ export default function SkipToContent() {
         borderRadius: 8,
         zIndex: 2000
       }}
-      onFocus={(e) => { e.target.style.left = "12px"; }}
-      onBlur={(e) => { e.target.style.left = "-9999px"; }}
+      onFocus={() => setVisible(true)}
+      onBlur={() => setVisible(false)}
     >
       Skip to main content
     </a>
