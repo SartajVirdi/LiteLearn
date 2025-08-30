@@ -1,3 +1,4 @@
+// src/components/LessonView.js
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { loadPacks } from "../packLoader";
@@ -66,7 +67,18 @@ export default function LessonView() {
     return <div style={{ padding: 24 }}>Lesson not found.</div>;
   }
 
-  const isCorrect = selected === lesson.quiz.answerIndex;
+  // --- DEBUG LOG ---
+  console.log("Debug lesson object:", lesson);
+
+  // Safe answerIndex
+  const validAnswerIndex =
+    typeof lesson.quiz?.answerIndex === "number" &&
+    lesson.quiz.answerIndex >= 0 &&
+    lesson.quiz.answerIndex < (lesson.quiz?.options?.length || 0)
+      ? lesson.quiz.answerIndex
+      : 0;
+
+  const isCorrect = selected === validAnswerIndex;
 
   return (
     <main id="main" style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
@@ -78,7 +90,7 @@ export default function LessonView() {
         {lesson.title} <TTS text={lesson.content} />
       </h1>
 
-      <p style={{ lineHeight: 1.6 }}>{lesson.content}</p>
+      <p style={{ lineHeight: 1.6 }}>{lesson.content || "⚠️ No content found."}</p>
 
       <section
         aria-labelledby="quiz-heading"
@@ -103,44 +115,54 @@ export default function LessonView() {
         </div>
 
         <div style={{ padding: 16 }}>
-          <p style={{ marginTop: 0 }}>{lesson.quiz.question}</p>
+          {lesson.quiz?.question ? (
+            <>
+              <p style={{ marginTop: 0 }}>{lesson.quiz.question}</p>
 
-          {lesson.quiz.options.map((opt, idx) => (
-            <label
-              key={idx}
-              style={{ display: "block", marginBottom: 8, cursor: "pointer" }}
-            >
-              <input
-                type="radio"
-                name="quiz"
-                checked={selected === idx}
-                onChange={() => setSelected(idx)}
-                aria-label={`Option ${idx + 1}: ${opt}`}
-                style={{ marginRight: 8 }}
-              />
-              {opt}
-            </label>
-          ))}
+              {lesson.quiz.options?.length > 0 ? (
+                lesson.quiz.options.map((opt, idx) => (
+                  <label
+                    key={idx}
+                    style={{ display: "block", marginBottom: 8, cursor: "pointer" }}
+                  >
+                    <input
+                      type="radio"
+                      name="quiz"
+                      checked={selected === idx}
+                      onChange={() => setSelected(idx)}
+                      aria-label={`Option ${idx + 1}: ${opt}`}
+                      style={{ marginRight: 8 }}
+                    />
+                    {opt}
+                  </label>
+                ))
+              ) : (
+                <p style={{ color: "red" }}>⚠️ No quiz options provided.</p>
+              )}
 
-          <button
-            onClick={() => {
-              setChecked(true);
-              updateMastery(`${lesson.id}-q1`, isCorrect);
-              if (isCorrect) markCompleted(lesson);
-            }}
-            disabled={selected === null}
-            style={{ marginTop: 8 }}
-            aria-label="Check selected quiz answer"
-          >
-            Check answer
-          </button>
+              <button
+                onClick={() => {
+                  setChecked(true);
+                  updateMastery(`${lesson.id}-q1`, isCorrect);
+                  if (isCorrect) markCompleted(lesson);
+                }}
+                disabled={selected === null}
+                style={{ marginTop: 8 }}
+                aria-label="Check selected quiz answer"
+              >
+                Check answer
+              </button>
 
-          {checked && (
-            <p style={{ marginTop: 12, fontWeight: "bold" }}>
-              {isCorrect
-                ? "✅ Correct! Marked as completed."
-                : "❌ Not quite. Try another option."}
-            </p>
+              {checked && (
+                <p style={{ marginTop: 12, fontWeight: "bold" }}>
+                  {isCorrect
+                    ? "✅ Correct! Marked as completed."
+                    : "❌ Not quite. Try another option."}
+                </p>
+              )}
+            </>
+          ) : (
+            <p style={{ color: "red" }}>⚠️ This lesson has no quiz question.</p>
           )}
         </div>
       </section>

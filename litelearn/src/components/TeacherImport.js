@@ -7,59 +7,54 @@ export default function TeacherImport({ onAdd }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Utility to clean values (trim + remove BOM if present)
-    const clean = (val) =>
-      val ? String(val).trim().replace(/^\uFEFF/, "") : "";
-
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
       complete: ({ data }) => {
-        const generated = data
-          .filter((row) => row && Object.keys(row).length > 0) // ensure not empty
-          .map((row, i) => {
-            const id = clean(row.id) || `teacher-${Date.now()}-${i}`;
-            const lang = clean(row.language || "en").toLowerCase();
+        const generated = data.filter(Boolean).map((row, i) => {
+          const id = row.id?.trim() || `teacher-${Date.now()}-${i}`;
+          const lang = (row.language || "en").toLowerCase();
 
-            return {
-              id,
-              // Use provided group or derive by stripping -en/-hi suffix from id
-              group: clean(row.group) || id.replace(/-(en|hi)$/i, ""),
-              language: lang,
+          return {
+            id,
+            group: row.group?.trim() || id.replace(/-(en|hi)$/i, ""),
+            language: lang,
 
-              // Subject & chapter support (with sensible defaults)
-              subjectId: clean(row.subjectId) || "general",
-              subjectTitle: clean(row.subjectTitle) || "General",
-              chapterId: clean(row.chapterId) || "general",
-              chapterTitle: clean(row.chapterTitle) || "General",
-              order: row.order ? Number(row.order) : 999,
+            // Subject & chapter support
+            subjectId: row.subjectId?.trim() || "general",
+            subjectTitle: row.subjectTitle?.trim() || "General",
+            chapterId: row.chapterId?.trim() || "general",
+            chapterTitle: row.chapterTitle?.trim() || "General",
+            order: row.order ? Number(row.order) : 999,
 
-              title: clean(row.title) || `Teacher Lesson ${i + 1}`,
-              content: clean(row.content),
-              quiz: {
-                // accept either quiz.question OR question
-                question: clean(row["quiz.question"] || row.question),
-                options: [
-                  clean(row["quiz.option1"]),
-                  clean(row["quiz.option2"]),
-                  clean(row["quiz.option3"]),
-                ].filter(Boolean), // remove empty
-                answerIndex: Number(
-                  row["quiz.answerIndex"] ?? row.answerIndex ?? 0
-                ),
-              },
-            };
-          });
+            title: row.title?.trim() || `Teacher Lesson ${i + 1}`,
+            content: row.content?.trim() || "",
 
-        if (generated.length === 0) {
-          alert("No lessons found in CSV. Check column headers.");
-          return;
-        }
+            quiz: {
+              // Always safe fallback
+              question:
+                row["quiz.question"]?.trim() ||
+                row.question?.trim() ||
+                "No quiz question provided.",
+              options: [
+                row["quiz.option1"],
+                row["quiz.option2"],
+                row["quiz.option3"],
+              ]
+                .filter(Boolean)
+                .map((s) => String(s)),
+              answerIndex: Math.max(
+                0,
+                Number(row["quiz.answerIndex"] ?? row.answerIndex ?? 0)
+              ),
+            },
+          };
+        });
+
         console.log("Parsed lessons:", generated);
-        onAdd(generated);
 
-        // reset input so the same file can be re-uploaded
-        e.target.value = "";
+        onAdd(generated);
+        e.target.value = ""; // reset input
       },
       error: (err) => {
         alert("CSV parse failed: " + err.message);
