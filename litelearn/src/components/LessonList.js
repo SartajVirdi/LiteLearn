@@ -1,3 +1,4 @@
+// src/components/LessonList.js
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { loadPacks } from "../packLoader";
@@ -7,33 +8,35 @@ import { dueNow } from "../adapt";
 import TeacherImport from "./TeacherImport";
 
 export default function LessonList() {
-  const [packs, setPacks] = useState([]);
-  const [imports, setImports] = useState([]);
+  const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentLang = getLang();
 
   useEffect(() => {
-    // Load both from storage
-    const cachedPacks = JSON.parse(localStorage.getItem("litelearn_packs") || "[]");
-    const cachedImports = JSON.parse(localStorage.getItem("litelearn_imports") || "[]");
+    // 1) Load cached lessons first
+    const cached = localStorage.getItem("litelearn_lessons");
+    if (cached) {
+      try {
+        setLessons(JSON.parse(cached));
+        setLoading(false);
+      } catch {
+        /* ignore bad cache */
+      }
+    }
 
-    if (cachedPacks.length) setPacks(cachedPacks);
-    if (cachedImports.length) setImports(cachedImports);
-    if (cachedPacks.length || cachedImports.length) setLoading(false);
-
-    // Always refresh packs
+    // 2) Fetch packs and update cache
     loadPacks()
       .then((ls) => {
-        setPacks(ls);
-        localStorage.setItem("litelearn_packs", JSON.stringify(ls));
+        setLessons(ls);
+        localStorage.setItem("litelearn_lessons", JSON.stringify(ls));
       })
-      .catch(() => { /* offline fallback */ })
+      .catch(() => {
+        // keep cache if fetch fails (offline etc.)
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  const lessons = [...packs, ...imports];
-
-  // Filter by language
+  // Filter by language, fallback to English
   const toShow = useMemo(() => {
     const filtered = lessons.filter((l) => (l.language || "").toLowerCase() === currentLang);
     return filtered.length ? filtered : lessons.filter((l) => (l.language || "").toLowerCase() === "en");
@@ -47,6 +50,9 @@ export default function LessonList() {
       </div>
     );
   }
+
+  // Translate "Later" → "बाद में" if Hindi is active
+  const laterLabel = currentLang === "hi" ? "बाद में" : "Later";
 
   return (
     <div style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
@@ -66,9 +72,10 @@ export default function LessonList() {
         </a>
       </p>
 
-      {/* Group by Subject -> Chapter */}
+      {/* Group lessons by Subject → Chapter */}
       {(() => {
         const subjects = new Map();
+
         for (const l of toShow) {
           const sId = l.subjectId || "general";
           const sTitle = l.subjectTitle || "General";
@@ -84,34 +91,116 @@ export default function LessonList() {
         const done = (lesson) => isCompleted(lesson);
 
         return [...subjects.entries()].map(([sId, subj]) => (
-          <section key={sId} style={{ marginBottom: 28 }}>
-            <h2>{subj.title}</h2>
+          <section key={sId} style={{ marginBottom: 32 }}>
+            <h2 style={{ margin: "8px 0 12px", borderBottom: "2px solid #ddd" }}>{subj.title}</h2>
+
             {[...subj.chapters.entries()].map(([cId, chap]) => {
-              chap.items.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+              chap.items.sort(
+                (a, b) => (a.order ?? 999) - (b.order ?? 999) || a.title.localeCompare(b.title)
+              );
               const completed = chap.items.filter(done).length;
               const total = chap.items.length;
+              const pct = Math.round((completed / Math.max(1, total)) * 100);
+
               return (
-                <article key={cId} style={{ marginBottom: 18 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                <article key={cId} style={{ marginBottom: 24 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 8,
+                    }}
+                  >
                     <h3 style={{ margin: 0 }}>{chap.title}</h3>
-                    <span style={{ fontSize: 12, border: "1px solid #999", borderRadius: 999, padding: "2px 8px" }}>
-                      {completed}/{total}
+                    <span
+                      style={{
+                        fontSize: 13,
+                        padding: "4px 10px",
+                        borderRadius: 999,
+                        background: "#eee",
+                      }}
+                      aria-label={`Chapter progress ${completed} of ${total}`}
+                    >
+                      {completed}/{total} • {pct}%
                     </span>
                   </div>
+
                   <ul style={{ listStyle: "none", padding: 0 }}>
                     {chap.items.map((l) => {
                       const dueKey = `${l.id}-q1`;
+                      const isDue = dueNow(dueKey);
+                      const completedFlag = done(l);
+
                       return (
-                        <li key={l.id} className="card" style={{ border: "1px solid #333", borderRadius: 12, padding: 16, marginBottom: 12 }}>
-                          <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <li
+                          key={l.id}
+                          className="card"
+                          style={{
+                            border: "1px solid #ccc",
+                            borderRadius: 12,
+                            padding: 16,
+                            marginBottom: 12,
+                            boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+                            opacity: isDue ? 1 : 0.55,
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              flexWrap: "wrap",
+                              gap: 10,
+                            }}
+                          >
                             <div>
-                              <strong>{l.title}</strong>{" "}
-                              <span style={{ fontSize: 12, border: "1px solid #999", borderRadius: 999, padding: "2px 8px" }}>
+                              <strong>{l.title}</strong>
+                              <span
+                                style={{
+                                  marginLeft: 8,
+                                  fontSize: 12,
+                                  padding: "2px 8px",
+                                  border: "1px solid #999",
+                                  borderRadius: 999,
+                                  opacity: 0.8,
+                                }}
+                              >
                                 {(l.language || "").toUpperCase()}
                               </span>
+                              {completedFlag && (
+                                <span
+                                  style={{
+                                    marginLeft: 8,
+                                    fontSize: 12,
+                                    padding: "2px 8px",
+                                    background: "#5c5",
+                                    color: "#fff",
+                                    borderRadius: 999,
+                                  }}
+                                >
+                                  ✓ Completed
+                                </span>
+                              )}
+                              {!isDue && !completedFlag && (
+                                <span
+                                  style={{
+                                    marginLeft: 8,
+                                    fontSize: 12,
+                                    padding: "2px 8px",
+                                    background: "#aaa",
+                                    color: "#fff",
+                                    borderRadius: 999,
+                                  }}
+                                  title="Scheduled later by adaptive practice"
+                                >
+                                  {laterLabel}
+                                </span>
+                              )}
                             </div>
-                            <Link to={`/lesson/${l.id}`}>
-                              <button>Open</button>
+
+                            <Link to={`/lesson/${l.id}`} style={{ textDecoration: "none" }}>
+                              <button aria-label={`Open lesson ${l.title}`}>Open</button>
                             </Link>
                           </div>
                         </li>
@@ -125,12 +214,12 @@ export default function LessonList() {
         ));
       })()}
 
-      {/* Teacher CSV Importer */}
+      {/* Teacher CSV Import */}
       <TeacherImport
         onAdd={(generated) => {
-          const updated = [...imports, ...generated];
-          setImports(updated);
-          localStorage.setItem("litelearn_imports", JSON.stringify(updated));
+          const next = [...lessons, ...generated];
+          setLessons(next);
+          localStorage.setItem("litelearn_lessons", JSON.stringify(next));
         }}
       />
     </div>
