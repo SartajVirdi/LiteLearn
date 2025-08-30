@@ -1,133 +1,138 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { loadPacks } from "../packLoader";
+import { isCompleted } from "../progress";
 import { getLang } from "../i18n";
-import { markCompleted } from "../progress";
-import { updateMastery } from "../adapt";
-import TTS from "./TTS";
+import { dueNow } from "../adapt";
+import TeacherImport from "./TeacherImport";
 
-export default function LessonView() {
-  const { id } = useParams();
-  const [allLessons, setAllLessons] = useState([]);
+export default function LessonList() {
+  const [packs, setPacks] = useState([]);
+  const [imported, setImported] = useState([]);
   const [loading, setLoading] = useState(true);
-  const lang = getLang();
+  const currentLang = getLang();
 
+  // Load packs + imports
   useEffect(() => {
-    const cached = localStorage.getItem("litelearn_lessons");
-    if (cached) {
-      try {
-        setAllLessons(JSON.parse(cached));
-        setLoading(false);
-      } catch {}
-    }
+    const cachedImports = JSON.parse(localStorage.getItem("litelearn_imported") || "[]");
+    if (cachedImports.length) setImported(cachedImports);
+
     loadPacks()
-      .then((ls) => {
-        setAllLessons(ls);
-        localStorage.setItem("litelearn_lessons", JSON.stringify(ls));
-      })
+      .then((ls) => setPacks(ls))
+      .catch(() => { /* offline fallback */ })
       .finally(() => setLoading(false));
   }, []);
 
-  const lesson = useMemo(() => {
-    if (!allLessons.length) return null;
-    const byId = allLessons.find((l) => l.id === id);
-    if (!byId) return null;
-    const group = byId.group || byId.id;
+  const allLessons = [...packs, ...imported];
 
-    const exact = allLessons.find(
-      (l) => (l.group || l.id) === group && l.language === lang
-    );
-    if (exact) return exact;
+  const toShow = allLessons.filter(
+    (l) => (l.language || "").toLowerCase() === currentLang
+  );
+  const displayLessons = toShow.length
+    ? toShow
+    : allLessons.filter((l) => (l.language || "").toLowerCase() === "en");
 
+  if (loading && !allLessons.length) {
     return (
-      allLessons.find(
-        (l) => (l.group || l.id) === group && l.language === "en"
-      ) || byId
+      <div style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
+        <h2>Lessons</h2>
+        <p style={{ opacity: 0.8 }}>Loading content packs…</p>
+      </div>
     );
-  }, [allLessons, id, lang]);
+  }
 
-  const [selected, setSelected] = useState(null);
-  const [checked, setChecked] = useState(false);
+  // Group by subject → chapter
+  const subjects = new Map();
+  for (const l of displayLessons) {
+    const sId = l.subjectId || "general";
+    const sTitle = l.subjectTitle || "General";
+    const cId = l.chapterId || "general";
+    const cTitle = l.chapterTitle || "General";
 
-  if (loading && !lesson) return <div style={{ padding: 24 }}>Loading lesson…</div>;
-  if (!lesson) return <div style={{ padding: 24 }}>Lesson not found.</div>;
-
-  const isCorrect = selected === lesson.quiz.answerIndex;
-  const groupKey = lesson.group || lesson.id;
-  console.log("Lesson loaded:", lesson)
+    if (!subjects.has(sId)) subjects.set(sId, { title: sTitle, chapters: new Map() });
+    const subj = subjects.get(sId);
+    if (!subj.chapters.has(cId)) subj.chapters.set(cId, { title: cTitle, items: [] });
+    subj.chapters.get(cId).items.push(l);
+  }
 
   return (
-    <main id="main" style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
-      <Link to="/" aria-label="Go back to lesson list" style={{ textDecoration: "none" }}>
-        ← Back
-      </Link>
+    <div style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
+      <h2 style={{ marginBottom: 8 }}>Lessons</h2>
+      <p style={{ opacity: 0.8, marginTop: 0 }}>
+        Works offline. Your progress saves on this device.
+      </p>
 
-      <h1 style={{ marginBottom: 12 }}>
-        {lesson.title} <TTS text={lesson.content} />
-      </h1>
+      {[...subjects.entries()].map(([sId, subj]) => (
+        <section key={sId} style={{ marginBottom: 28 }}>
+          <h2 style={{ margin: "8px 0 12px" }}>{subj.title}</h2>
+          {[...subj.chapters.entries()].map(([cId, chap]) => {
+            chap.items.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
 
-      <p style={{ lineHeight: 1.6 }}>{lesson.content}</p>
+            const completed = chap.items.filter(isCompleted).length;
+            const total = chap.items.length;
+            const pct = Math.round((completed / Math.max(1, total)) * 100);
 
-      <section
-        aria-labelledby="quiz-heading"
-        style={{
-          marginTop: 24,
-          border: "1px solid #333",
-          borderRadius: 12,
-          overflow: "hidden",
+            return (
+              <article key={cId} style={{ marginBottom: 18 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                  <h3 style={{ margin: 0 }}>{chap.title}</h3>
+                  <span style={{ fontSize: 12, padding: "2px 8px", border: "1px solid #999", borderRadius: 999 }}>
+                    {completed}/{total} • {pct}%
+                  </span>
+                </div>
+                <ul style={{ listStyle: "none", padding: 0 }}>
+                  {chap.items.map((l) => {
+                    const groupKey = l.group || l.id;
+                    const isDue = dueNow(`${groupKey}-q1`);
+                    const completedFlag = isCompleted(groupKey);
+
+                    return (
+                      <li key={l.id} className="card" style={{
+                        border: "1px solid #333",
+                        borderRadius: 12,
+                        padding: 16,
+                        marginBottom: 12,
+                        opacity: isDue ? 1 : 0.55,
+                      }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
+                          <div>
+                            <strong>{l.title}</strong>
+                            <span style={{ marginLeft: 8, fontSize: 12, padding: "2px 8px", border: "1px solid #999", borderRadius: 999 }}>
+                              {(l.language || "").toUpperCase()}
+                            </span>
+                            {completedFlag && (
+                              <span style={{ marginLeft: 8, fontSize: 12, padding: "2px 8px", border: "1px solid #5c5", borderRadius: 999 }}>
+                                ✓ Completed
+                              </span>
+                            )}
+                            {!isDue && !completedFlag && (
+                              <span style={{ marginLeft: 8, fontSize: 12, padding: "2px 8px", border: "1px solid #aaa", borderRadius: 999 }}>
+                                {currentLang === "hi" ? "बाद में" : "Later"}
+                              </span>
+                            )}
+                          </div>
+                          <Link to={`/lesson/${l.id}`} style={{ textDecoration: "none" }}>
+                            <button>Open</button>
+                          </Link>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </article>
+            );
+          })}
+        </section>
+      ))}
+
+      {/* Teacher CSV Import */}
+      <TeacherImport
+        onAdd={(generated) => {
+          const updated = [...imported, ...generated];
+          setImported(updated);
+          localStorage.setItem("litelearn_imported", JSON.stringify(updated));
         }}
-      >
-        <div
-          id="quiz-heading"
-          style={{
-            background: "var(--card-header, #f0f0f0)",
-            padding: "10px 16px",
-            borderBottom: "1px solid #333",
-            fontSize: "16px",
-          }}
-        >
-          Test Yourself
-        </div>
-
-        <div style={{ padding: 16 }}>
-          <p style={{ marginTop: 0 }}>{lesson.quiz.question}</p>
-
-          {lesson.quiz.options.map((opt, idx) => (
-            <label key={idx} style={{ display: "block", marginBottom: 8, cursor: "pointer" }}>
-              <input
-                type="radio"
-                name="quiz"
-                checked={selected === idx}
-                onChange={() => setSelected(idx)}
-                aria-label={`Option ${idx + 1}: ${opt}`}
-                style={{ marginRight: 8 }}
-              />
-              {opt}
-            </label>
-          ))}
-
-          <button
-            onClick={() => {
-              setChecked(true);
-              updateMastery(`${groupKey}-q1`, isCorrect); // ✅ always update
-              if (isCorrect) markCompleted(lesson);       // ✅ pass lesson object
-            }}
-            disabled={selected === null}
-            style={{ marginTop: 8 }}
-            aria-label="Check selected quiz answer"
-          >
-            Check answer
-          </button>
-
-          {checked && (
-            <p style={{ marginTop: 12, fontWeight: "bold" }}>
-              {isCorrect
-                ? "✅ Correct! Marked as completed."
-                : "❌ Not quite. Try another option."}
-            </p>
-          )}
-        </div>
-      </section>
-    </main>
+      />
+    </div>
   );
 }

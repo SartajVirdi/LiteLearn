@@ -2,8 +2,8 @@ import React from "react";
 
 export default function ClearImportedLessons() {
   const handleClear = () => {
-    if (!window.confirm("Remove imported lessons? The app will reload.")) return;
-    localStorage.removeItem("litelearn_imports");
+    if (!window.confirm("Remove imported lessons?")) return;
+    localStorage.removeItem("litelearn_imported");
     window.location.reload();
   };
 
@@ -11,7 +11,6 @@ export default function ClearImportedLessons() {
     <button
       onClick={handleClear}
       className="floating-btn clear-btn"
-      aria-label="Clear imported lessons"
     >
       Clear imported lessons
     </button>
