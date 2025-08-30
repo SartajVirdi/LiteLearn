@@ -27,16 +27,6 @@ LiteLearn bridges this gap with a lightweight, offline-first Progressive Web App
 
 ---
 
-## Screenshots  
-- Homepage with Language Switch and Offline Badge  
-- Lesson View with TTS and Test Yourself Quiz  
-- Spaced Repetition “Later” Badge  
-- Teacher Import Demo (CSV Upload)  
-- High Contrast Mode  
-- Install Prompt (PWA)  
-
----
-
 ## Technical Implementation  
 
 ### Tech Stack  
