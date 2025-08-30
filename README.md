@@ -43,7 +43,8 @@ npm run deploy
 
 ---
 
-## Demonstration  
+## Demonstration
+Live Demo: [https://SartajVirdi.github.io/LiteLearn](https://SartajVirdi.github.io/LiteLearn)  
 1. Launch LiteLearn – Homepage with logo, language switch, offline badge  
 2. Open a Lesson – Lesson content with Text-to-Speech  
 3. Test Yourself Quiz – Adaptive spaced repetition in action  
