@@ -1,3 +1,4 @@
+// src/components/TeacherImport.js
 import React from "react";
 import Papa from "papaparse";
 
@@ -45,12 +46,16 @@ export default function TeacherImport({ onAdd }) {
           };
         });
 
-        const prev = JSON.parse(localStorage.getItem("litelearn_imported") || "[]");
+        // 🔑 Merge into the same storage key as default lessons
+        const prev = JSON.parse(localStorage.getItem("litelearn_lessons") || "[]");
         const updated = [...prev, ...generated];
-        localStorage.setItem("litelearn_imported", JSON.stringify(updated));
+        localStorage.setItem("litelearn_lessons", JSON.stringify(updated));
+
+        // Notify parent
         onAdd(updated);
 
-        e.target.value = ""; // reset input
+        // reset input so the same file can be uploaded again
+        e.target.value = "";
       },
       error: (err) => {
         alert("CSV parse failed: " + err.message);
