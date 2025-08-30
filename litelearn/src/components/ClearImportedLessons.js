@@ -1,9 +1,13 @@
+// src/components/ClearImportedLessons.js
 import React from "react";
 
 export default function ClearImportedLessons() {
   const handleClear = () => {
-    if (!window.confirm("Remove imported lessons? The app will reload and keep pack content.")) return;
-    localStorage.removeItem("litelearn_lessons");
+    if (!window.confirm("Remove teacher-imported lessons? The app will reload and keep built-in packs.")) return;
+
+    // ✅ Clear imported lessons, not built-in packs
+    localStorage.removeItem("litelearn_imported");
+
     window.location.reload();
   };
 

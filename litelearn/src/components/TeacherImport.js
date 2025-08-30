@@ -12,7 +12,7 @@ export default function TeacherImport({ onAdd }) {
       skipEmptyLines: true,
       complete: ({ data }) => {
         const generated = data.filter(Boolean).map((row, i) => {
-          const id = row.id?.trim() || `teacher-${Date.now()}-${i}`;
+          const id = row.id?.trim() || 'teacher-${Date.now()}-${i}';
           const lang = (row.language || "en").toLowerCase();
 
           return {
@@ -27,11 +27,10 @@ export default function TeacherImport({ onAdd }) {
             chapterTitle: row.chapterTitle?.trim() || "General",
             order: row.order ? Number(row.order) : 999,
 
-            title: row.title?.trim() || `Teacher Lesson ${i + 1}`,
+            title: row.title?.trim() || 'Teacher Lesson ${i + 1}',
             content: row.content?.trim() || "",
 
             quiz: {
-              // Always safe fallback
               question:
                 row["quiz.question"]?.trim() ||
                 row.question?.trim() ||
@@ -53,8 +52,16 @@ export default function TeacherImport({ onAdd }) {
 
         console.log("Parsed lessons:", generated);
 
+        // ✅ Save imported lessons separately
+        const prev = JSON.parse(localStorage.getItem("litelearn_imported") || "[]");
+        const merged = [...prev, ...generated];
+        localStorage.setItem("litelearn_imported", JSON.stringify(merged));
+
+        // Pass back to parent (LessonList)
         onAdd(generated);
-        e.target.value = ""; // reset input
+
+        // reset input so same file can be uploaded again
+        e.target.value = "";
       },
       error: (err) => {
         alert("CSV parse failed: " + err.message);
