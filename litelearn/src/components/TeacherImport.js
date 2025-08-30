@@ -55,7 +55,7 @@ export default function TeacherImport({ onAdd }) {
           alert("No lessons found in CSV. Check column headers.");
           return;
         }
-
+        console.log("Parsed lessons:", generated);
         onAdd(generated);
 
         // reset input so the same file can be re-uploaded
