@@ -1,7 +1,9 @@
 # LiteLearn  
 **Learn anytime, anywhere — even offline**  
 
-![LiteLearn Logo](assets/logo.png)  
+<p align="left">
+  <img src="assets/logo_readme.png" alt="LiteLearn Logo" width="180"/>
+</p>
 
 **Created by:** Sartaj Virdi  
 **Hackathon Submission — August 2025**  
