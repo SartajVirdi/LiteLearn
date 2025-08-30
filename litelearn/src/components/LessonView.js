@@ -54,6 +54,7 @@ export default function LessonView() {
 
   const isCorrect = selected === lesson.quiz.answerIndex;
   const groupKey = lesson.group || lesson.id;
+  console.log("Lesson loaded:", lesson)
 
   return (
     <main id="main" style={{ maxWidth: 720, margin: "24px auto", padding: 16 }}>
