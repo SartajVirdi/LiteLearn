@@ -54,6 +54,46 @@ Live Demo: [https://SartajVirdi.github.io/LiteLearn](https://SartajVirdi.github.
 
 ---
 
+## For Teachers: Importing Your Own Lessons
+
+LiteLearn allows teachers to upload their own lesson content in bulk using a simple CSV file.  
+This makes it easy to prepare lessons in Excel and import them directly into the app.
+
+### Required CSV Columns
+
+Each row represents one lesson. The following columns are supported:
+
+| Column Name       | Description                                                                 | Example                        |
+|-------------------|-----------------------------------------------------------------------------|--------------------------------|
+| `id`              | A unique ID for the lesson (include `-en` / `-hi` for language variants)   | `teacher-math-1-en`            |
+| `group`           | Group ID to link lessons across languages                                  | `teacher-math-1`               |
+| `language`        | Language code (`en` for English, `hi` for Hindi, etc.)                     | `en`                           |
+| `subjectId`       | Identifier for the subject                                                 | `mathematics`                  |
+| `subjectTitle`    | Subject name                                                               | `Mathematics`                  |
+| `chapterId`       | Identifier for the chapter                                                 | `math-basics`                  |
+| `chapterTitle`    | Chapter name                                                               | `Math Basics`                  |
+| `order`           | Order of the lesson inside the chapter (numeric)                           | `1`                            |
+| `title`           | Title of the lesson                                                        | `Multiplication Basics`        |
+| `content`         | Lesson content / explanation                                               | `Multiplication is repeated addition.` |
+| `quiz.question`   | The quiz question                                                          | `2 × 3 equals?`                |
+| `quiz.option1`    | First quiz option                                                          | `5`                            |
+| `quiz.option2`    | Second quiz option                                                         | `6`                            |
+| `quiz.option3`    | Third quiz option                                                          | `9`                            |
+| `quiz.answerIndex`| Correct option index (0 = first, 1 = second, 2 = third)                    | `1`                            |
+
+### Example CSV (in Excel)
+
+| id                  | group            | language | subjectId   | subjectTitle | chapterId    | chapterTitle | order | title                  | content                                       | quiz.question        | quiz.option1 | quiz.option2 | quiz.option3 | quiz.answerIndex |
+|----------------------|-----------------|----------|-------------|--------------|--------------|--------------|-------|------------------------|-----------------------------------------------|----------------------|--------------|--------------|--------------|------------------|
+| teacher-math-3-en    | teacher-math-3  | en       | mathematics | Mathematics  | math-basics  | Math Basics  | 3     | Multiplication Basics  | Multiplication means repeated addition.       | 2 × 3 equals?        | 5            | 6            | 9            | 1                |
+| teacher-math-3-hi    | teacher-math-3  | hi       | mathematics | गणित         | math-basics  | गणित की मूल बातें | 3     | गुणा की मूल बातें     | गुणा का मतलब बार-बार जोड़ना होता है।        | 2 × 3 कितना होता है? | 5            | 6            | 9            | 1                |
+
+---
+
+Teachers can edit this CSV in Excel or Google Sheets and then **upload it into LiteLearn** using the **“Upload CSV (Teacher)”** button inside the app.  
+The lessons instantly appear alongside built-in lessons, with offline support and progress tracking.
+
+
 ## Key Features  
 - **Offline-First PWA** – Lessons, progress, and teacher-imported content work without internet.  
 - **Bilingual Support (English & Hindi)** – Instant toggle between languages.  
