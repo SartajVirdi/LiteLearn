@@ -12,18 +12,7 @@ export default function ClearImportedLessons() {
       onClick={handleClear}
       aria-label="Clear imported lessons"
       title="Clear imported lessons"
-      style={{
-        position: "fixed",
-        bottom: 48, // stacked above ResetProgress (which is at 12)
-        left: 12,
-        zIndex: 1000,
-        padding: "6px 10px",
-        borderRadius: 8,
-        border: "1px solid var(--btn-border, #333)",
-        background: "var(--btn-bg, #fff)",
-        color: "var(--btn-text, #000)",
-        cursor: "pointer"
-      }}
+      className="floating-btn clear-btn"
     >
       Clear imported lessons
     </button>
